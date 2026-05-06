@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #080c13;
+    color: #E5E7EB;
+  }
+}
+
+@layer utilities {
+  /* Engineering grid background — brand-blue lines */
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(75, 163, 227, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(75, 163, 227, 0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* Primary glow — brand-blue */
+  .glow-blue {
+    box-shadow: 0 0 24px rgba(75, 163, 227, 0.35), 0 0 48px rgba(75, 163, 227, 0.12);
+  }
+
+  .glow-blue-sm {
+    box-shadow: 0 0 14px rgba(75, 163, 227, 0.3);
+  }
+
+  .text-glow-blue {
+    text-shadow: 0 0 32px rgba(75, 163, 227, 0.6);
+  }
+
+  /* Accent glow — brand-accent (gold, sparingly) */
+  .glow-accent-sm {
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
+  }
+
+  /* Glassmorphism surface */
+  .glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}

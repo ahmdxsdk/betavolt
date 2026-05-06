@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "services": "Services",
+    "projects": "Projects",
+    "about": "About Us",
+    "contact": "Contact",
+    "cta": "Get a Quote"
+  },
+  "hero": {
+    "badge": "Certified MEP & Smart Systems Contractor",
+    "headline_line1": "Engineering the Infrastructure",
+    "headline_line2": "of Tomorrow",
+    "headline_accent": "Smart. Scalable. Reliable.",
+    "subtitle": "From high-voltage electrical systems and solar energy to data centers and intelligent building automation — BetaVolt delivers end-to-end MEP solutions built to perform.",
+    "cta_primary": "View Our Projects",
+    "cta_secondary": "Explore Services"
+  },
+  "services": {
+    "industrial_electrical": "Industrial Electrical",
+    "solar_energy": "Solar Energy",
+    "low_current": "Low Current Systems",
+    "cctv_fire": "CCTV & Fire Alarm",
+    "data_centers": "Data Centers",
+    "bms": "BMS & Automation",
+    "plc_scada": "PLC / SCADA",
+    "networks": "Network Infrastructure"
+  },
+  "services_section": {
+    "eyebrow": "What We Do",
+    "title": "End-to-End MEP & Smart Infrastructure",
+    "subtitle": "From initial design to commissioning — integrated solutions that power, protect, and connect modern facilities.",
+    "cta": "View All Services",
+    "cards": {
+      "power": {
+        "title": "Power & Electrical Systems",
+        "desc": "LV/MV switchgear, distribution panels, industrial lighting, earthing systems, and 24/7 maintenance contracts for factories and commercial facilities."
+      },
+      "solar": {
+        "title": "Solar Energy Systems",
+        "desc": "Design and installation of rooftop grid-tied solar systems for commercial and industrial buildings, with full monitoring and commissioning."
+      },
+      "low_current": {
+        "title": "Low Current & Security",
+        "desc": "Integrated CCTV, fire alarm, access control, and structured LAN cabling — designed and installed as a unified smart system."
+      },
+      "data_centers": {
+        "title": "Data Centers & Networks",
+        "desc": "Structured cabling, raised floors, precision cooling, UPS, and full data center build-out from design through commissioning."
+      },
+      "bms": {
+        "title": "Smart Building (BMS)",
+        "desc": "Building Management Systems that optimize energy, HVAC, lighting, and access control from a single intelligent platform."
+      },
+      "plc_scada": {
+        "title": "Industrial Automation",
+        "desc": "PLC programming, SCADA integration, and industrial control systems for manufacturing and process automation environments."
+      }
+    }
+  }
+}
