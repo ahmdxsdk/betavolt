@@ -3,18 +3,34 @@
 @tailwind utilities;
 
 @layer base {
+  /* Force dark color scheme — prevents browser from applying
+     light-mode adjustments to SVGs, inherited text colors,
+     scrollbars, and form controls regardless of OS preference. */
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
   * {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
-
   body {
     background-color: #080c13;
     color: #E5E7EB;
+  }
+
+  /* Prevent Windows Forced Colors / High-Contrast mode from
+     overriding brand colors on key UI elements. */
+  @media (forced-colors: active) {
+    .text-brand-blue,
+    .text-brand-accent,
+    [class*="text-brand-"],
+    [class*="bg-brand-"],
+    [class*="border-brand-"] {
+      forced-color-adjust: none;
+    }
   }
 }
 

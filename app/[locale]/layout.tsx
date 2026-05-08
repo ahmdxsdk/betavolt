@@ -10,7 +10,7 @@ import '@/app/globals.css';
 export const metadata: Metadata = {
   title: 'BetaVolt – Engineering & Contracting',
   description:
-    'BetaVolt specializes in MEP systems, low current, solar energy, and data center infrastructure.',
+    'BetaVolt specializes in electrical systems, low current, communications, solar energy, and smart infrastructure contracting.',
 };
 
 type Props = {
@@ -32,7 +32,8 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html
       lang={locale}
       dir={dir}
-      className={`${cairo.variable} ${orbitron.variable}`}
+      className={`dark ${cairo.variable} ${orbitron.variable}`}
+      style={{ colorScheme: 'dark' }}
     >
       <body className="bg-brand-dark font-cairo antialiased min-h-screen">
         <NextIntlClientProvider messages={messages}>

@@ -1,23 +1,23 @@
-import type { Config } from 'tailwindcss';
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+const config = {
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './lib/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         // ── Brand tokens ──────────────────────────────────
-        'brand-dark':  '#080c13',          // base background
+        'brand-dark':  '#080c13',
         'brand-blue': {
-          DEFAULT: '#4ba3e3',              // primary: buttons, accents, "Volt"
+          DEFAULT: '#4ba3e3',
           hover:   '#60b4f0',
           dim:     '#2563eb',
         },
         'brand-accent': {
-          DEFAULT: '#eab308',              // gold — used sparingly (nodes, hover)
+          DEFAULT: '#eab308',
           hover:   '#ca8a04',
           dim:     '#a16207',
         },
@@ -60,4 +60,4 @@ const config: Config = {
   plugins: [],
 };
 
-export default config;
+module.exports = config;

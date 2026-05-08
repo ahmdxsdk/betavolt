@@ -151,7 +151,7 @@ export default async function Services() {
         {/* ── Bottom CTA ── */}
         <div className="text-center mt-10 sm:mt-12 lg:mt-14">
           <a
-            href="#contact"
+            href="/services"
             className="
               inline-flex items-center gap-2
               px-6 sm:px-8 py-3 sm:py-3.5

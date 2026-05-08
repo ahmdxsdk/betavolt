@@ -1,16 +1,18 @@
 import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
 import { Link } from '@/navigation';
 import LanguageSwitcher from './LanguageSwitcher';
 import MobileMenuButton from './MobileMenuButton';
+import NavLinks from './NavLinks';
 
 export default async function Navbar() {
   const t = await getTranslations('nav');
 
   const links = [
-    { href: '#services', label: t('services') },
-    { href: '#projects', label: t('projects') },
-    { href: '#about',    label: t('about')    },
-    { href: '#contact',  label: t('contact')  },
+    { href: '/services',  label: t('services'), route: true  },
+    { href: '#projects',  label: t('projects'), route: false },
+    { href: '#about',     label: t('about'),    route: false },
+    { href: '#contact',   label: t('contact'),  route: false },
   ];
 
   return (
@@ -35,38 +37,21 @@ export default async function Navbar() {
           className="flex items-center gap-2 shrink-0 select-none min-h-[44px] min-w-[44px]"
           aria-label="BetaVolt home"
         >
-          <svg
-            className="w-6 h-6 sm:w-7 sm:h-7 text-brand-blue animate-glow-pulse shrink-0"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path d="M13 2L4.5 13.5H11L10 22L20.5 10H14L13 2Z" />
-          </svg>
+          <Image
+            src="/images/logo-icon.png"
+            alt=""
+            width={28}
+            height={28}
+            className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 object-contain"
+            priority
+          />
           <span className="font-orbitron font-black text-base sm:text-lg tracking-wide leading-none">
             <span className="text-white">BETA</span><span className="text-brand-blue">VOLT</span>
           </span>
         </Link>
 
         {/* ── Desktop nav links (≥ 768px) ── */}
-        <ul className="hidden md:flex items-center gap-0.5 lg:gap-1">
-          {links.map(({ href, label }) => (
-            <li key={href}>
-              <a
-                href={href}
-                className="
-                  px-3 lg:px-4 py-2 rounded-lg
-                  text-sm font-medium
-                  text-slate-400 hover:text-white hover:bg-brand-blue/[0.08]
-                  transition-colors duration-150
-                  min-h-[44px] inline-flex items-center
-                "
-              >
-                {label}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <NavLinks links={links} />
 
         {/* ── Right side (always visible) ── */}
         <div className="flex items-center gap-2">
