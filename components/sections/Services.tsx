@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import { Link } from '@/navigation';
 
 /* ── Service card icon components (24×24) ── */
 function PowerIcon() {
@@ -150,7 +151,7 @@ export default async function Services() {
 
         {/* ── Bottom CTA ── */}
         <div className="text-center mt-10 sm:mt-12 lg:mt-14">
-          <a
+          <Link
             href="/services"
             className="
               inline-flex items-center gap-2
@@ -165,7 +166,7 @@ export default async function Services() {
           >
             {t('cta')}
             <span className="rtl:rotate-180 shrink-0" aria-hidden="true"><ArrowIcon /></span>
-          </a>
+          </Link>
         </div>
 
       </div>
