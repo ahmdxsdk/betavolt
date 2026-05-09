@@ -35,7 +35,7 @@ export default async function LocaleLayout({ children, params }: Props) {
       className={`dark ${cairo.variable} ${orbitron.variable}`}
       style={{ colorScheme: 'dark' }}
     >
-      <body className="bg-brand-dark font-cairo antialiased min-h-screen">
+      <body className={`${cairo.className} bg-brand-dark antialiased min-h-screen`}>
         <NextIntlClientProvider messages={messages}>
           <Navbar />
           {children}

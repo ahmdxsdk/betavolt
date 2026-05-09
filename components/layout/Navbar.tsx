@@ -10,7 +10,7 @@ export default async function Navbar() {
 
   const links = [
     { href: '/services',  label: t('services'), route: true  },
-    { href: '#projects',  label: t('projects'), route: false },
+    { href: '/projects',  label: t('projects'), route: true  },
     { href: '#about',     label: t('about'),    route: false },
     { href: '#contact',   label: t('contact'),  route: false },
   ];

@@ -8,8 +8,8 @@
   },
   "hero": {
     "badge": "Certified Electrical, Low Current & Smart Infrastructure Contractor",
-    "headline_line1": "Engineering the Infrastructure",
-    "headline_line2": "of Tomorrow",
+    "headline_line1": "Advanced Energy",
+    "headline_line2": "Solutions",
     "headline_accent": "Smart. Scalable. Reliable.",
     "subtitle": "From high-voltage electrical installations and solar energy to low current systems, communications networks, and data centers — BetaVolt delivers end-to-end Electrical & Smart Infrastructure solutions built to perform.",
     "cta_primary": "View Our Projects",
@@ -25,6 +25,22 @@
     "plc_scada": "PLC / SCADA",
     "networks": "Network Infrastructure"
   },
+  "projects_page": {
+    "eyebrow": "Our Work",
+    "title": "Featured Projects",
+    "subtitle": "A selection of completed projects across electrical, low current, communications, and infrastructure disciplines.",
+    "filter_all": "All",
+    "filter_data_centers": "Data Centers",
+    "filter_low_current": "Low Current & Smart",
+    "filter_power": "Power & Electrical",
+    "filter_infrastructure": "Infrastructure",
+    "view_details": "View Details",
+    "modal_challenge": "The Challenge",
+    "modal_solution": "The Solution",
+    "modal_gallery": "Project Gallery",
+    "modal_close": "Close",
+    "no_results": "No projects found for this category."
+  },
   "services_page": {
     "eyebrow": "Our Expertise",
     "title": "Services & Capabilities",
@@ -32,6 +48,16 @@
     "cta_title": "Ready to Start Your Project?",
     "cta_subtitle": "Contact our engineering team for a detailed consultation and project quote.",
     "cta_button": "Get a Free Quote"
+  },
+  "stats": {
+    "stat1_value": "50+",
+    "stat1_label": "Completed Projects",
+    "stat2_value": "10+",
+    "stat2_label": "Years of Expertise",
+    "stat3_value": "24/7",
+    "stat3_label": "Tech Support",
+    "stat4_value": "100%",
+    "stat4_label": "Smart Infrastructure"
   },
   "services_section": {
     "eyebrow": "What We Do",
