@@ -41,12 +41,12 @@ export default async function Services() {
   return (
     <section
       id="services"
-      className="relative py-16 sm:py-20 md:py-28 lg:py-36 overflow-x-hidden"
+      className="relative py-16 sm:py-20 md:py-28 lg:py-36 overflow-x-hidden bg-slate-900"
     >
-      {/* Subtle mid-page glow */}
+      {/* Top separator glow */}
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-px"
-        style={{ background: 'linear-gradient(to right, transparent, rgba(75,163,227,0.2), transparent)' }}
+        style={{ background: 'linear-gradient(to right, transparent, rgba(75,163,227,0.25), transparent)' }}
         aria-hidden="true"
       />
 
@@ -95,9 +95,10 @@ export default async function Services() {
                 group relative flex flex-col gap-4
                 p-5 sm:p-6
                 rounded-xl sm:rounded-2xl
-                border border-brand-blue/[0.1]
-                bg-navy-800/30
-                hover:border-brand-blue/25 hover:bg-navy-800/50
+                border border-slate-700/50
+                bg-slate-800/40 backdrop-blur-md
+                hover:border-blue-500/50
+                hover:shadow-[0_0_20px_rgba(59,130,246,0.12)]
                 transition-all duration-300
                 overflow-hidden
               "
@@ -105,7 +106,7 @@ export default async function Services() {
               {/* Corner glow on hover */}
               <div
                 className="pointer-events-none absolute -top-10 -end-10 w-32 h-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ background: accent ? 'radial-gradient(circle, rgba(234,179,8,0.12) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(75,163,227,0.12) 0%, transparent 70%)' }}
+                style={{ background: accent ? 'radial-gradient(circle, rgba(234,179,8,0.14) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(59,130,246,0.14) 0%, transparent 70%)' }}
                 aria-hidden="true"
               />
 
@@ -114,22 +115,23 @@ export default async function Services() {
                 w-11 h-11 sm:w-12 sm:h-12
                 flex items-center justify-center
                 rounded-lg sm:rounded-xl
-                transition-colors duration-300
+                border backdrop-blur-sm
+                transition-all duration-300
                 shrink-0
                 ${accent
-                  ? 'bg-brand-accent/10 text-brand-accent group-hover:bg-brand-accent/15'
-                  : 'bg-brand-blue/10  text-brand-blue  group-hover:bg-brand-blue/15'}
+                  ? 'bg-slate-700/50 border-slate-600/50 text-brand-accent group-hover:bg-brand-accent/15 group-hover:border-brand-accent/40'
+                  : 'bg-slate-700/50 border-slate-600/50 text-brand-blue  group-hover:bg-brand-blue/15  group-hover:border-brand-blue/40'}
               `}>
                 <Icon />
               </div>
 
               {/* Title */}
-              <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
+              <h3 className="text-base sm:text-lg font-bold text-white leading-snug group-hover:text-white transition-colors duration-300">
                 {t(`cards.${key}.title`)}
               </h3>
 
               {/* Description */}
-              <p className="text-slate-400 text-sm leading-relaxed flex-1">
+              <p className="text-slate-300 text-sm leading-relaxed flex-1">
                 {t(`cards.${key}.desc`)}
               </p>
 

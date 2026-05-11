@@ -173,7 +173,7 @@ export default function ProjectsGrid({ locale }: { locale: string }) {
   const [exiting, setExiting]               = useState(false);
   const [activeProject, setActiveProject]   = useState<Project | null>(null);
   const [mounted, setMounted]               = useState(false);
-  const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const exitTimer = useRef<number | null>(null);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -182,13 +182,13 @@ export default function ProjectsGrid({ locale }: { locale: string }) {
     return () => { document.body.style.overflow = ''; };
   }, [activeProject]);
 
-  useEffect(() => () => { if (exitTimer.current) clearTimeout(exitTimer.current); }, []);
+  useEffect(() => () => { if (exitTimer.current) window.clearTimeout(exitTimer.current); }, []);
 
   function handleFilterChange(key: FilterKey) {
     if (key === activeFilter) return;
     setActiveFilter(key);
     setExiting(true);
-    exitTimer.current = setTimeout(() => {
+    exitTimer.current = window.setTimeout(() => {
       setDisplayedFilter(key);
       setExiting(false);
     }, 220);

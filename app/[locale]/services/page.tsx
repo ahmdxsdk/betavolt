@@ -195,7 +195,7 @@ export default async function ServicesPage({ params }: Props) {
               px-8 py-4
               min-h-[52px]
               rounded-xl
-              bg-brand-blue text-brand-dark font-bold text-base
+              bg-brand-blue text-white font-bold text-base
               glow-blue-sm hover:bg-brand-blue-hover
               transition-all duration-200 hover:scale-105 active:scale-100
             "

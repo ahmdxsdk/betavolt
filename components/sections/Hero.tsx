@@ -1,4 +1,5 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, getLocale } from 'next-intl/server';
+import { Link } from '@/navigation';
 
 /* ── SVG icons ── */
 function BoltIcon()   { return <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L4.5 13.5H11L10 22L20.5 10H14L13 2Z"/></svg>; }
@@ -18,7 +19,8 @@ const SERVICE_KEYS  = [
 ] as const;
 
 export default async function Hero() {
-  const t = await getTranslations();
+  const t      = await getTranslations();
+  const locale = await getLocale();
 
   return (
     <section
@@ -26,22 +28,45 @@ export default async function Hero() {
       className="
         relative flex items-center justify-center
         min-h-screen
-        bg-grid overflow-x-hidden
+        overflow-hidden
         pt-20 pb-12
         sm:pt-24 sm:pb-16
         lg:pt-32 lg:pb-24
       "
     >
-      {/* ── Primary glow orb ── */}
+      {/* ── Background video ── */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        poster="/img/video-placeholder.jpg"
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover -z-20"
+      >
+        <source src="/img/betavolt.webm" type="video/webm" />
+        <source src="/img/betavolt.mp4"  type="video/mp4"  />
+      </video>
+
+      {/* ── Elevated dark overlay: soft slate gradient, video breathes through ── */}
       <div
-        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[min(1000px,200vw)] h-[500px] sm:h-[600px]"
-        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(75,163,227,0.11) 0%, transparent 65%)' }}
+        className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-900/80 via-slate-900/50 to-slate-900"
         aria-hidden="true"
       />
 
-      {/* ── Secondary orb (hidden on small screens to reduce paint cost) ── */}
+      {/* ── Engineering grid overlay ── */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-30" aria-hidden="true" />
+
+      {/* ── Primary glow orb ── */}
       <div
-        className="pointer-events-none absolute bottom-1/4 -end-20 sm:-end-40 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] opacity-20"
+        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[min(1000px,200vw)] h-[500px] sm:h-[600px]"
+        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(75,163,227,0.10) 0%, transparent 65%)' }}
+        aria-hidden="true"
+      />
+
+      {/* ── Secondary orb ── */}
+      <div
+        className="pointer-events-none absolute bottom-1/4 -end-20 sm:-end-40 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] opacity-15"
         style={{ background: 'radial-gradient(ellipse, rgba(75,163,227,0.4) 0%, transparent 70%)' }}
         aria-hidden="true"
       />
@@ -54,27 +79,16 @@ export default async function Hero() {
       {/* ── Content ── */}
       <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 
-        {/* Badge */}
-        <div className="
-          inline-flex items-center gap-2
-          mb-5 sm:mb-6 lg:mb-8
-          px-3 sm:px-4 py-1.5 rounded-full
-          border border-brand-blue/20 bg-brand-blue/[0.06]
-          text-brand-blue text-xs sm:text-sm font-semibold tracking-wide
-          max-w-full
-          animate-fade-up
-        ">
-          <span className="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse-slow shrink-0" aria-hidden="true" />
-          <span className="truncate">{t('hero.badge')}</span>
-        </div>
-
         {/* Headline — mobile-first scale */}
-        <h1 className="
-          font-black tracking-tight leading-[1.1]
-          text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[4.25rem]
-          mb-3 sm:mb-4 lg:mb-5
-          animate-fade-up [animation-delay:80ms]
-        ">
+        <h1
+          className="
+            font-black tracking-tight leading-[1.1]
+            text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[4.25rem]
+            mb-3 sm:mb-4 lg:mb-5
+            animate-fade-up [animation-delay:80ms]
+          "
+          style={locale === 'ar' ? { lineHeight: '1.22' } : undefined}
+        >
           <span className="text-white">{t('hero.headline_line1')}</span>
           <br />
           <span className="text-brand-blue text-glow-blue">{t('hero.headline_line2')}</span>
@@ -108,8 +122,8 @@ export default async function Hero() {
           mb-10 sm:mb-12 lg:mb-14
           animate-fade-up [animation-delay:320ms]
         ">
-          <a
-            href="#projects"
+          <Link
+            href="/projects"
             className="
               inline-flex items-center justify-center gap-2
               px-6 sm:px-7 py-3.5
@@ -123,7 +137,7 @@ export default async function Hero() {
           >
             {t('hero.cta_primary')}
             <span className="rtl:rotate-180 shrink-0" aria-hidden="true"><ArrowIcon /></span>
-          </a>
+          </Link>
 
           <a
             href="#services"
@@ -175,10 +189,9 @@ export default async function Hero() {
 
       </div>
 
-      {/* ── Bottom fade ── */}
+      {/* ── Bottom fade → merges into slate-900 sections below ── */}
       <div
-        className="pointer-events-none absolute bottom-0 inset-x-0 h-24 sm:h-32"
-        style={{ background: 'linear-gradient(to top, #080c13, transparent)' }}
+        className="pointer-events-none absolute bottom-0 inset-x-0 h-28 sm:h-40 bg-gradient-to-t from-slate-900 to-transparent"
         aria-hidden="true"
       />
     </section>

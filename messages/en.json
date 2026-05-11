@@ -25,6 +25,19 @@
     "plc_scada": "PLC / SCADA",
     "networks": "Network Infrastructure"
   },
+  "about": {
+    "eyebrow": "About BetaVolt",
+    "hero_headline": "Building the Technical Nervous System of Modern Facilities",
+    "hero_subtitle": "From power infrastructure to intelligent control systems — BetaVolt engineers, installs, and maintains the critical systems that keep Saudi Arabia's most demanding facilities running.",
+    "dna_eyebrow": "Company DNA",
+    "dna_title": "Engineered From First Principles",
+    "stats_eyebrow": "By The Numbers",
+    "stats_title": "Technical Achievements",
+    "map_eyebrow": "Our Footprint",
+    "map_title": "Operating Across Saudi Arabia",
+    "why_eyebrow": "Why BetaVolt",
+    "why_title": "The Difference You Can Measure"
+  },
   "projects_page": {
     "eyebrow": "Our Work",
     "title": "Featured Projects",
