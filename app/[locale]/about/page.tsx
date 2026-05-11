@@ -88,11 +88,6 @@ const STATS = [
   },
 ] as const;
 
-const CITIES = [
-  { name: { en: 'Riyadh', ar: 'الرياض' }, top: '38%', left: '57%', gold: false },
-  { name: { en: 'Jeddah', ar: 'جدة'    }, top: '52%', left: '33%', gold: true  },
-  { name: { en: 'Abha',   ar: 'أبها'   }, top: '67%', left: '43%', gold: false },
-] as const;
 
 const WHY = [
   {
@@ -292,85 +287,47 @@ export default async function AboutPage({ params }: Props) {
             </h2>
           </div>
 
-          {/* Stylised map container */}
-          <div
-            className="relative w-full h-[320px] sm:h-[420px] rounded-2xl overflow-hidden border border-slate-700/50 bg-slate-800/40 backdrop-blur-md"
-            style={{
-              backgroundImage: 'radial-gradient(rgba(75,163,227,0.08) 1px,transparent 1px)',
-              backgroundSize: '28px 28px',
-            }}
-          >
-            {/* Ambient center glow */}
-            <div
-              className="pointer-events-none absolute inset-0"
-              style={{
-                background:
-                  'radial-gradient(ellipse 65% 65% at 52% 50%,rgba(75,163,227,0.07) 0%,transparent 70%)',
-              }}
-              aria-hidden="true"
+          {/* Google Maps embed */}
+          <div className="relative w-full h-[380px] sm:h-[460px] rounded-2xl overflow-hidden border border-slate-700/50 shadow-[0_8px_40px_rgba(0,0,0,0.5)]">
+            <iframe
+              src="https://maps.google.com/maps?q=26.2172,50.1971&z=14&output=embed&hl=ar"
+              width="100%"
+              height="100%"
+              style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) saturate(0.85) brightness(0.9)' }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title={lang === 'ar' ? 'موقع مقرنا الرئيسي — الخبر' : 'Our HQ Location — Al Khobar'}
             />
 
-            {/* Saudi Arabia silhouette hint — decorative border lines */}
-            <div
-              className="pointer-events-none absolute inset-6 rounded-xl border border-slate-700/30"
-              aria-hidden="true"
-            />
-
-            {/* City markers */}
-            {CITIES.map((city) => (
-              <div
-                key={city.name.en}
-                className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2"
-                style={{ top: city.top, left: city.left }}
-              >
-                {/* Layered ping animation */}
-                <div className="relative flex items-center justify-center">
-                  <span
-                    className={[
-                      'absolute inline-flex h-10 w-10 rounded-full opacity-30 animate-ping',
-                      city.gold ? 'bg-brand-accent' : 'bg-brand-blue',
-                    ].join(' ')}
-                  />
-                  <span
-                    className={[
-                      'absolute inline-flex h-6 w-6 rounded-full opacity-25 animate-pulse',
-                      city.gold ? 'bg-brand-accent' : 'bg-brand-blue',
-                    ].join(' ')}
-                  />
-                  <span
-                    className={[
-                      'relative inline-flex h-3.5 w-3.5 rounded-full',
-                      city.gold
-                        ? 'bg-brand-accent shadow-[0_0_10px_rgba(234,179,8,0.7)]'
-                        : 'bg-brand-blue  shadow-[0_0_10px_rgba(75,163,227,0.7)]',
-                    ].join(' ')}
-                  />
-                </div>
-
-                {/* City label pill */}
-                <span
-                  className={[
-                    'text-[11px] font-bold tracking-wide whitespace-nowrap px-2 py-0.5 rounded-full bg-slate-900/80 border',
-                    city.gold
-                      ? 'text-brand-accent border-brand-accent/35'
-                      : 'text-brand-blue  border-brand-blue/35',
-                  ].join(' ')}
-                >
-                  {city.name[lang]}
+            {/* Label overlay */}
+            <div className="pointer-events-none absolute bottom-4 start-4">
+              <div className="flex items-center gap-2 bg-slate-900/90 backdrop-blur-sm border border-brand-blue/30 rounded-xl px-3 py-2 shadow-lg">
+                <span className="relative flex h-3 w-3 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-blue opacity-60" />
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-brand-blue shadow-[0_0_8px_rgba(75,163,227,0.8)]" />
+                </span>
+                <span className="text-xs font-bold text-white">
+                  {lang === 'ar' ? 'المقر الرئيسي — الخبر، المنطقة الشرقية' : 'HQ — Al Khobar, Eastern Province'}
                 </span>
               </div>
-            ))}
+            </div>
 
-            {/* Legend */}
-            <div className="absolute bottom-4 end-4 flex flex-col gap-1.5 bg-slate-900/70 backdrop-blur-sm rounded-lg border border-slate-700/50 px-3 py-2.5">
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <span className="w-2.5 h-2.5 rounded-full bg-brand-blue shrink-0" />
-                {lang === 'ar' ? 'مكتب رئيسي' : 'Main Office'}
-              </div>
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <span className="w-2.5 h-2.5 rounded-full bg-brand-accent shrink-0" />
-                {lang === 'ar' ? 'فرع إقليمي' : 'Regional Branch'}
-              </div>
+            {/* Open in Maps button */}
+            <div className="pointer-events-none absolute bottom-4 end-4">
+              <a
+                href="https://maps.app.goo.gl/yZUnxT64cNQq2vHk8"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pointer-events-auto flex items-center gap-1.5 text-xs font-semibold text-brand-blue hover:text-white bg-slate-900/90 hover:bg-brand-blue backdrop-blur-sm border border-brand-blue/30 hover:border-brand-blue px-3 py-2 rounded-xl transition-all duration-200 shadow-lg"
+              >
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+                {lang === 'ar' ? 'فتح في خرائط جوجل' : 'Open in Google Maps'}
+              </a>
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { projectsData, type FilterKey, type Project } from '@/lib/projects-data';
+import { projectsData, type FilterKey, type Project, type GalleryItem } from '@/lib/projects-data';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -52,6 +52,112 @@ function CloseIcon() {
   );
 }
 
+function PlayIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <polygon points="6 3 20 12 6 21 6 3" />
+    </svg>
+  );
+}
+
+// ── Image Lightbox ─────────────────────────────────────────────────────────
+
+function ImageLightbox({ url, onClose }: { url: string; onClose: () => void }) {
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-10"
+      onClick={onClose}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/90 backdrop-blur-md" aria-hidden="true" />
+
+      {/* Panel */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="relative z-10 w-full max-w-5xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute -top-11 end-0 flex items-center gap-2 text-slate-400 hover:text-white transition-colors duration-150 text-sm font-medium"
+          aria-label="Close image"
+        >
+          <CloseIcon />
+          <span>Close</span>
+        </button>
+
+        {/* Image container */}
+        <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-[0_32px_100px_rgba(0,0,0,0.9)] bg-black">
+          <img
+            src={url}
+            alt=""
+            className="w-full h-auto max-h-[80vh] object-contain block"
+          />
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ── Video Lightbox ─────────────────────────────────────────────────────────
+
+function VideoLightbox({ url, onClose }: { url: string; onClose: () => void }) {
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-8"
+      onClick={onClose}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/90 backdrop-blur-md" aria-hidden="true" />
+
+      {/* Panel */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="relative z-10 w-full max-w-4xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute -top-11 end-0 flex items-center gap-2 text-slate-400 hover:text-white transition-colors duration-150 text-sm font-medium"
+          aria-label="Close video"
+        >
+          <CloseIcon />
+          <span>Close</span>
+        </button>
+
+        {/* Video container */}
+        <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-[0_32px_100px_rgba(0,0,0,0.9)] bg-black aspect-video">
+          <video
+            src={url}
+            controls
+            autoPlay
+            playsInline
+            className="w-full h-full object-contain"
+          />
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 function Badge({ category, lang }: { category: string; lang: Lang }) {
   return (
     <span className={`inline-block text-xs font-bold tracking-wide uppercase px-2.5 py-1 rounded-full border ${CATEGORY_STYLE[category]}`}>
@@ -62,10 +168,12 @@ function Badge({ category, lang }: { category: string; lang: Lang }) {
 
 // ── Modal ─────────────────────────────────────────────────────────────────
 
-function Modal({ project, lang, onClose, t }: {
+function Modal({ project, lang, onClose, onPlayVideo, onViewImage, t }: {
   project: Project;
   lang: Lang;
   onClose: () => void;
+  onPlayVideo: (url: string) => void;
+  onViewImage: (url: string) => void;
   t: ReturnType<typeof useTranslations>;
 }) {
   return createPortal(
@@ -114,9 +222,22 @@ function Modal({ project, lang, onClose, t }: {
             <h2 className="text-xl sm:text-2xl font-black text-white leading-snug mt-2 mb-1">
               {project.title[lang]}
             </h2>
-            <p className="text-slate-400 text-sm flex items-center gap-1.5">
-              <PinIcon />{project.location[lang]}
-            </p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-slate-400 text-sm flex items-center gap-1.5">
+                <PinIcon />{project.location[lang]}
+              </p>
+              {project.mapUrl && (
+                <a
+                  href={project.mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-blue hover:text-brand-blue-hover border border-brand-blue/25 hover:border-brand-blue/60 hover:bg-brand-blue/[0.08] px-2.5 py-1 rounded-lg transition-all duration-200"
+                >
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                  {lang === 'ar' ? 'فتح في خرائط جوجل' : 'Open in Google Maps'}
+                </a>
+              )}
+            </div>
           </div>
 
           {/* Challenge / Solution */}
@@ -140,16 +261,71 @@ function Modal({ project, lang, onClose, t }: {
             <p className="text-[10px] font-black tracking-[0.18em] uppercase text-slate-500 mb-3">
               {t('modal_gallery')}
             </p>
-            <div className="grid grid-cols-3 gap-2 sm:gap-3">
-              {project.gallery.map((src, i) => (
-                <div key={i} className="relative aspect-video rounded-lg overflow-hidden bg-navy-800">
-                  <Image
-                    src={src}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 30vw, 200px"
-                  />
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+              {project.gallery.map((item: GalleryItem, i: number) => (
+                <div key={i} className="relative aspect-video rounded-lg overflow-hidden bg-slate-800">
+                  {item.type === 'image' ? (
+                    <button
+                      onClick={() => onViewImage(item.url)}
+                      className="group relative w-full h-full block"
+                      aria-label="View image"
+                    >
+                      <Image
+                        src={item.url}
+                        alt=""
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 768px) 30vw, 200px"
+                      />
+                      {/* Scrim + zoom icon on hover */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-10 h-10 rounded-full bg-white/15 border border-white/25 backdrop-blur-sm flex items-center justify-center text-white">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </button>
+                  ) : (
+                    /* ── Video thumbnail card ── */
+                    <button
+                      onClick={() => onPlayVideo(item.url)}
+                      className="group relative w-full h-full flex items-center justify-center"
+                      aria-label="Play video"
+                    >
+                      {/* Video thumbnail — first frame via preload="metadata" */}
+                      <video
+                        src={item.url}
+                        preload="metadata"
+                        muted
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover"
+                        tabIndex={-1}
+                      />
+
+                      {/* Dark scrim so play button pops */}
+                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/55 transition-colors duration-300" />
+
+                      {/* Play button */}
+                      <div className="
+                        relative z-10
+                        w-14 h-14 rounded-full
+                        flex items-center justify-center ps-1
+                        bg-white/10 border border-white/25
+                        text-white
+                        backdrop-blur-sm
+                        shadow-[0_0_28px_rgba(75,163,227,0.35)]
+                        group-hover:bg-brand-blue group-hover:border-brand-blue
+                        group-hover:shadow-[0_0_36px_rgba(75,163,227,0.6)]
+                        transition-all duration-300 group-hover:scale-110
+                      ">
+                        <PlayIcon />
+                      </div>
+
+                      {/* Bottom shimmer line */}
+                      <div className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-brand-blue/60 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -168,11 +344,13 @@ export default function ProjectsGrid({ locale }: { locale: string }) {
   const t = useTranslations('projects_page');
   const lang = locale as Lang;
 
-  const [activeFilter, setActiveFilter]     = useState<FilterKey>('all');
+  const [activeFilter, setActiveFilter]       = useState<FilterKey>('all');
   const [displayedFilter, setDisplayedFilter] = useState<FilterKey>('all');
-  const [exiting, setExiting]               = useState(false);
-  const [activeProject, setActiveProject]   = useState<Project | null>(null);
-  const [mounted, setMounted]               = useState(false);
+  const [exiting, setExiting]                 = useState(false);
+  const [activeProject, setActiveProject]     = useState<Project | null>(null);
+  const [activeVideo, setActiveVideo]         = useState<string | null>(null);
+  const [activeImage, setActiveImage]         = useState<string | null>(null);
+  const [mounted, setMounted]                 = useState(false);
   const exitTimer = useRef<number | null>(null);
 
   useEffect(() => { setMounted(true); }, []);
@@ -286,22 +464,54 @@ export default function ProjectsGrid({ locale }: { locale: string }) {
                 <h3 className="text-base sm:text-[1.05rem] font-bold text-white leading-snug mt-2.5 mb-1.5 line-clamp-2">
                   {project.title[lang]}
                 </h3>
-                <p className="text-slate-400 text-sm flex items-center gap-1.5">
-                  <PinIcon />{project.location[lang]}
-                </p>
+                <div className="flex items-center justify-between gap-2 mt-1">
+                  <p className="text-slate-400 text-sm flex items-center gap-1.5 min-w-0 truncate">
+                    <PinIcon />{project.location[lang]}
+                  </p>
+                  {project.mapUrl && (
+                    <a
+                      href={project.mapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="shrink-0 flex items-center gap-1 text-[11px] font-semibold text-brand-blue/70 hover:text-brand-blue border border-brand-blue/20 hover:border-brand-blue/50 hover:bg-brand-blue/[0.07] px-2 py-1 rounded-md transition-all duration-200"
+                    >
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                      {lang === 'ar' ? 'الخريطة' : 'Map'}
+                    </a>
+                  )}
+                </div>
               </div>
             </button>
           ))}
         </div>
       )}
 
-      {/* ── Modal ─────────────────────────────────────────────────────── */}
+      {/* ── Project Modal ─────────────────────────────────────────────── */}
       {mounted && activeProject && (
         <Modal
           project={activeProject}
           lang={lang}
           onClose={() => setActiveProject(null)}
+          onPlayVideo={(url) => setActiveVideo(url)}
+          onViewImage={(url) => setActiveImage(url)}
           t={t}
+        />
+      )}
+
+      {/* ── Video Lightbox ────────────────────────────────────────────── */}
+      {mounted && activeVideo && (
+        <VideoLightbox
+          url={activeVideo}
+          onClose={() => setActiveVideo(null)}
+        />
+      )}
+
+      {/* ── Image Lightbox ────────────────────────────────────────────── */}
+      {mounted && activeImage && (
+        <ImageLightbox
+          url={activeImage}
+          onClose={() => setActiveImage(null)}
         />
       )}
 
