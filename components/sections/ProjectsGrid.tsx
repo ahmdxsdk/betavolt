@@ -95,11 +95,13 @@ function ImageLightbox({ url, onClose }: { url: string; onClose: () => void }) {
         </button>
 
         {/* Image container */}
-        <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-[0_32px_100px_rgba(0,0,0,0.9)] bg-black">
+        <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-[0_32px_100px_rgba(0,0,0,0.9)] bg-black max-h-[82vh] flex items-center justify-center">
           <img
             src={url}
             alt=""
-            className="w-full h-auto max-h-[80vh] object-contain block"
+            fetchPriority="high"
+            decoding="sync"
+            className="w-full h-auto max-h-[82vh] object-contain block"
           />
         </div>
       </div>
@@ -274,8 +276,9 @@ function Modal({ project, lang, onClose, onPlayVideo, onViewImage, t }: {
                         src={item.url}
                         alt=""
                         fill
+                        priority={i < 6}
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 768px) 30vw, 200px"
+                        sizes="(max-width: 640px) calc(50vw - 24px), 210px"
                       />
                       {/* Scrim + zoom icon on hover */}
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center">
@@ -425,6 +428,18 @@ export default function ProjectsGrid({ locale }: { locale: string }) {
             <button
               key={project.id}
               onClick={() => setActiveProject(project)}
+              onMouseEnter={() => {
+                project.gallery
+                  .filter((g) => g.type === 'image')
+                  .slice(0, 6)
+                  .forEach((g) => {
+                    const link = document.createElement('link');
+                    link.rel = 'prefetch';
+                    link.as = 'image';
+                    link.href = g.url;
+                    document.head.appendChild(link);
+                  });
+              }}
               style={{
                 animation: `card-in 420ms cubic-bezier(0.22, 1, 0.36, 1) ${i * 60}ms both`,
               }}
