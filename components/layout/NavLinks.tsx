@@ -25,8 +25,8 @@ export default function NavLinks({ links }: { links: NavLink[] }) {
       {links.map(({ href, label, route }) => {
         const active = isActive(pathname, href);
         const colorCls = active
-          ? 'text-white bg-brand-blue/[0.08]'
-          : 'text-slate-400 hover:text-white hover:bg-brand-blue/[0.08]';
+          ? 'text-blue-600 dark:text-blue-400 bg-blue-600/[0.08] dark:bg-blue-500/[0.12]'
+          : 'text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-600/[0.06] dark:hover:bg-blue-500/[0.10]';
 
         return (
           <li key={href}>

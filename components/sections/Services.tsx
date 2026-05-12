@@ -1,7 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/navigation';
 
-/* ── Service card icon components (24×24) ── */
 function PowerIcon() {
   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M13 2L4.5 13.5H11L10 22L20.5 10H14L13 2Z" fill="currentColor" stroke="none"/></svg>;
 }
@@ -25,14 +24,13 @@ function ArrowIcon() {
   return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>;
 }
 
-/* One card uses brand-accent tint, the rest use brand-blue */
 const CARDS = [
-  { key: 'power',       Icon: PowerIcon,  accent: false },
-  { key: 'solar',       Icon: SolarIcon,  accent: true  },
-  { key: 'low_current', Icon: ShieldIcon, accent: false },
-  { key: 'data_centers',Icon: ServerIcon, accent: false },
-  { key: 'bms',         Icon: BmsIcon,    accent: false },
-  { key: 'plc_scada',   Icon: AutoIcon,   accent: true  },
+  { key: 'power',        Icon: PowerIcon,  accent: false },
+  { key: 'solar',        Icon: SolarIcon,  accent: true  },
+  { key: 'low_current',  Icon: ShieldIcon, accent: false },
+  { key: 'data_centers', Icon: ServerIcon, accent: false },
+  { key: 'bms',          Icon: BmsIcon,    accent: false },
+  { key: 'plc_scada',    Icon: AutoIcon,   accent: true  },
 ] as const;
 
 export default async function Services() {
@@ -41,7 +39,7 @@ export default async function Services() {
   return (
     <section
       id="services"
-      className="relative py-16 sm:py-20 md:py-28 lg:py-36 overflow-x-hidden bg-slate-900"
+      className="relative py-16 sm:py-20 md:py-28 lg:py-36 overflow-x-hidden bg-white dark:bg-slate-950 transition-colors duration-300"
     >
       {/* Top separator glow */}
       <div
@@ -54,22 +52,21 @@ export default async function Services() {
 
         {/* ── Section header ── */}
         <div className="text-center mb-10 sm:mb-12 lg:mb-16">
-          {/* Eyebrow */}
           <p className="
             inline-flex items-center gap-2
             text-xs sm:text-sm font-bold tracking-[0.2em] uppercase
-            text-brand-blue/70
+            text-blue-600/80 dark:text-blue-400/80
             mb-3 sm:mb-4
           ">
-            <span className="block w-6 h-px bg-brand-blue/40" aria-hidden="true" />
+            <span className="block w-6 h-px bg-brand-blue/40 dark:bg-blue-500/40" aria-hidden="true" />
             {t('eyebrow')}
-            <span className="block w-6 h-px bg-brand-blue/40" aria-hidden="true" />
+            <span className="block w-6 h-px bg-brand-blue/40 dark:bg-blue-500/40" aria-hidden="true" />
           </p>
 
           <h2 className="
             font-black tracking-tight leading-tight
             text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem]
-            text-white
+            text-slate-900 dark:text-white
             mb-3 sm:mb-4
             max-w-3xl mx-auto
           ">
@@ -77,7 +74,7 @@ export default async function Services() {
           </h2>
 
           <p className="
-            text-slate-400 leading-relaxed
+            text-slate-600 dark:text-slate-400 leading-relaxed
             text-sm sm:text-base lg:text-[1.05rem]
             max-w-xl lg:max-w-2xl mx-auto
           ">
@@ -86,7 +83,6 @@ export default async function Services() {
         </div>
 
         {/* ── Cards grid ── */}
-        {/* mobile: 1 col | sm: 2 col | lg: 3 col */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
           {CARDS.map(({ key, Icon, accent }) => (
             <div
@@ -95,10 +91,11 @@ export default async function Services() {
                 group relative flex flex-col gap-4
                 p-5 sm:p-6
                 rounded-xl sm:rounded-2xl
-                border border-slate-700/50
-                bg-slate-800/40 backdrop-blur-md
-                hover:border-blue-500/50
-                hover:shadow-[0_0_20px_rgba(59,130,246,0.12)]
+                border border-slate-200 dark:border-slate-800
+                bg-white dark:bg-slate-900/60
+                shadow-sm dark:shadow-none
+                hover:border-blue-400/40 dark:hover:border-blue-600/40
+                hover:shadow-xl hover:shadow-blue-900/5 dark:hover:shadow-blue-900/20
                 transition-all duration-300
                 overflow-hidden
               "
@@ -119,19 +116,19 @@ export default async function Services() {
                 transition-all duration-300
                 shrink-0
                 ${accent
-                  ? 'bg-slate-700/50 border-slate-600/50 text-brand-accent group-hover:bg-brand-accent/15 group-hover:border-brand-accent/40'
-                  : 'bg-slate-700/50 border-slate-600/50 text-brand-blue  group-hover:bg-brand-blue/15  group-hover:border-brand-blue/40'}
+                  ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/60 text-brand-accent group-hover:bg-brand-accent/15 group-hover:border-brand-accent/40'
+                  : 'bg-blue-50  dark:bg-blue-950/40  border-blue-200  dark:border-blue-800/60  text-blue-600 dark:text-blue-400 group-hover:bg-blue-600/15 group-hover:border-blue-600/40'}
               `}>
                 <Icon />
               </div>
 
               {/* Title */}
-              <h3 className="text-base sm:text-lg font-bold text-white leading-snug group-hover:text-white transition-colors duration-300">
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug transition-colors duration-300">
                 {t(`cards.${key}.title`)}
               </h3>
 
               {/* Description */}
-              <p className="text-slate-300 text-sm leading-relaxed flex-1">
+              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed flex-1">
                 {t(`cards.${key}.desc`)}
               </p>
 
@@ -160,9 +157,12 @@ export default async function Services() {
               px-6 sm:px-8 py-3 sm:py-3.5
               min-h-[48px]
               rounded-lg
-              border border-brand-blue/25 text-brand-blue/90 font-semibold
+              border border-blue-600/25 dark:border-blue-500/30
+              text-blue-600 dark:text-blue-400
+              font-semibold
               text-sm sm:text-base
-              hover:border-brand-blue/50 hover:bg-brand-blue/[0.07] hover:text-brand-blue
+              hover:border-blue-600/50 dark:hover:border-blue-400/50
+              hover:bg-blue-600/[0.07] dark:hover:bg-blue-500/[0.10]
               transition-all duration-200
             "
           >

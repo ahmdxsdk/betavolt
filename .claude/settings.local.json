@@ -9,7 +9,10 @@
       "PowerShell(\\(Get-Item \"C:\\\\Users\\\\Administrator\\\\Downloads\\\\betavolt\\\\public\\\\img\\\\betavolt.mp4\"\\).Length)",
       "mcp__Claude_Preview__preview_start",
       "WebFetch(domain:maps.app.goo.gl)",
-      "WebFetch(domain:www.google.com)"
+      "WebFetch(domain:www.google.com)",
+      "Bash(node -e \"require\\('next-themes'\\); console.log\\('ok'\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)\\)\")",
+      "Bash(mkdir \"C:\\\\Users\\\\Administrator\\\\Downloads\\\\betavolt\\\\app\\\\[locale]\\\\contact\")"
     ]
   }
 }

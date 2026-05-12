@@ -27,7 +27,7 @@ export default function MobileMenuButton({ links, ctaLabel }: Props) {
 
   const overlay = isOpen && (
     <div
-      className="fixed inset-0 z-[60] bg-brand-dark/95 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-[60] bg-white/98 dark:bg-slate-950/98 backdrop-blur-md overflow-y-auto transition-colors duration-300"
       onClick={() => setIsOpen(false)}
     >
       {/* Close button — top-end corner */}
@@ -37,8 +37,10 @@ export default function MobileMenuButton({ links, ctaLabel }: Props) {
         className="
           absolute top-4 end-4
           w-11 h-11 flex items-center justify-center
-          rounded-full border border-white/10
-          text-slate-400 hover:text-white hover:border-white/20
+          rounded-full border border-slate-200 dark:border-slate-700
+          text-slate-500 dark:text-slate-400
+          hover:text-slate-900 dark:hover:text-white
+          hover:border-slate-300 dark:hover:border-slate-600
           transition-colors duration-150
         "
       >
@@ -65,8 +67,8 @@ export default function MobileMenuButton({ links, ctaLabel }: Props) {
             transition-all duration-150
             min-h-[56px] flex items-center justify-center
             ${active
-              ? 'text-brand-blue bg-brand-blue/[0.06]'
-              : 'text-slate-300 hover:text-brand-blue hover:bg-brand-blue/[0.06]'}
+              ? 'text-blue-600 dark:text-blue-400 bg-blue-600/[0.06] dark:bg-blue-500/[0.10]'
+              : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-600/[0.06] dark:hover:bg-blue-500/[0.10]'}
           `;
           return link.route ? (
             <LocaleLink
@@ -89,22 +91,22 @@ export default function MobileMenuButton({ links, ctaLabel }: Props) {
           );
         })}
 
-        <div className="w-full max-w-xs h-px bg-white/[0.06] my-4" />
+        <div className="w-full max-w-xs h-px bg-slate-200 dark:bg-slate-800 my-4" />
 
-        <a
-          href="#contact"
+        <LocaleLink
+          href="/contact"
           onClick={() => setIsOpen(false)}
           className="
             w-full max-w-xs flex items-center justify-center gap-2
             px-8 py-4 rounded-xl
-            bg-brand-blue text-brand-dark font-bold text-lg
-            glow-blue-sm hover:bg-brand-blue-hover
+            bg-brand-blue text-white font-bold text-lg
+            hover:bg-brand-blue-hover
             transition-all duration-200
             min-h-[56px]
           "
         >
           {ctaLabel}
-        </a>
+        </LocaleLink>
       </div>
     </div>
   );
@@ -121,7 +123,9 @@ export default function MobileMenuButton({ links, ctaLabel }: Props) {
           flex flex-col justify-center items-center
           w-11 h-11 gap-[5px]
           rounded-lg
-          text-slate-300 hover:text-white hover:bg-white/[0.06]
+          text-slate-600 dark:text-slate-400
+          hover:text-slate-900 dark:hover:text-white
+          hover:bg-slate-100 dark:hover:bg-slate-800
           transition-colors duration-150
           shrink-0
         "

@@ -4,6 +4,7 @@ import { Link } from '@/navigation';
 import LanguageSwitcher from './LanguageSwitcher';
 import MobileMenuButton from './MobileMenuButton';
 import NavLinks from './NavLinks';
+import ThemeToggle from './ThemeToggle';
 
 export default async function Navbar() {
   const t = await getTranslations('nav');
@@ -12,7 +13,7 @@ export default async function Navbar() {
     { href: '/services',  label: t('services'), route: true  },
     { href: '/projects',  label: t('projects'), route: true  },
     { href: '/about',     label: t('about'),    route: true  },
-    { href: '#contact',   label: t('contact'),  route: false },
+    { href: '/contact',   label: t('contact'),  route: true  },
   ];
 
   return (
@@ -23,10 +24,12 @@ export default async function Navbar() {
           flex items-center justify-between
           h-14
           rounded-xl
-          bg-navy-800/60 backdrop-blur-md
-          border border-brand-blue/[0.12]
-          shadow-[0_2px_32px_rgba(0,0,0,0.6)]
+          bg-white/90 dark:bg-slate-900/90
+          backdrop-blur-md
+          border border-slate-200 dark:border-slate-800
+          shadow-[0_2px_16px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_16px_rgba(0,0,0,0.3)]
           px-3 sm:px-5
+          transition-colors duration-300
         "
         aria-label="Main navigation"
       >
@@ -46,7 +49,7 @@ export default async function Navbar() {
             priority
           />
           <span className="font-orbitron font-black text-base sm:text-lg tracking-wide leading-none">
-            <span className="text-white">BETA</span><span className="text-brand-blue">VOLT</span>
+            <span className="text-slate-900 dark:text-white">BETA</span><span className="text-brand-blue">VOLT</span>
           </span>
         </Link>
 
@@ -55,22 +58,23 @@ export default async function Navbar() {
 
         {/* ── Right side (always visible) ── */}
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <LanguageSwitcher />
 
           {/* CTA — only on desktop to avoid crowding at 640–767 px */}
-          <a
-            href="#contact"
+          <Link
+            href="/contact"
             className="
               hidden md:inline-flex items-center gap-1.5
               px-4 py-2.5 rounded-lg
-              bg-brand-blue text-brand-dark font-bold text-sm
-              glow-blue-sm hover:bg-brand-blue-hover
+              bg-brand-blue text-white font-bold text-sm
+              hover:bg-brand-blue-hover shadow-sm
               transition-all duration-200 hover:scale-105 active:scale-100
               min-h-[44px]
             "
           >
             {t('cta')}
-          </a>
+          </Link>
 
           <MobileMenuButton links={links} ctaLabel={t('cta')} />
         </div>

@@ -123,7 +123,7 @@ const WHY = [
 
 function Eyebrow({ label }: { label: string }) {
   return (
-    <p className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.2em] uppercase text-brand-blue/70 mb-4">
+    <p className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.2em] uppercase text-blue-600 dark:text-blue-500 mb-4">
       <span className="block w-6 h-px bg-brand-blue/40" aria-hidden="true" />
       {label}
       <span className="block w-6 h-px bg-brand-blue/40" aria-hidden="true" />
@@ -139,21 +139,21 @@ export default async function AboutPage({ params }: Props) {
   const t    = await getTranslations('about');
 
   return (
-    <main className="overflow-x-hidden bg-slate-900 text-white">
+    <main className="overflow-x-hidden bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
 
       {/* ── 1. Blueprint Hero ─────────────────────────────────────────── */}
       <section
-        className="relative min-h-[72vh] flex items-center justify-center pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden"
+        className="relative min-h-[72vh] flex items-center justify-center pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden bg-slate-50 dark:bg-[#07111F]"
         style={{
           backgroundImage:
-            'linear-gradient(to right,#80808012 1px,transparent 1px),linear-gradient(to bottom,#80808012 1px,transparent 1px)',
+            'linear-gradient(to right,rgba(148,163,184,0.15) 1px,transparent 1px),linear-gradient(to bottom,rgba(148,163,184,0.15) 1px,transparent 1px)',
           backgroundSize: '24px 24px',
         }}
       >
         {/* Radial glow */}
         <div
           className="pointer-events-none absolute inset-0"
-          style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(75,163,227,0.13) 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(75,163,227,0.10) 0%, transparent 70%)' }}
           aria-hidden="true"
         />
         {/* Top edge */}
@@ -166,29 +166,29 @@ export default async function AboutPage({ params }: Props) {
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Eyebrow label={t('eyebrow')} />
           <h1
-            className="font-black tracking-tight leading-[1.1] text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] text-white mb-6"
+            className="font-black tracking-tight leading-[1.1] text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] text-slate-900 dark:text-white mb-6"
             style={lang === 'ar' ? { lineHeight: '1.5' } : undefined}
           >
             {t('hero_headline')}
           </h1>
-          <p className="text-slate-400 text-base sm:text-lg lg:text-xl leading-relaxed max-w-2xl mx-auto">
+          <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg lg:text-xl leading-relaxed max-w-2xl mx-auto">
             {t('hero_subtitle')}
           </p>
         </div>
 
-        {/* Bottom fade into slate-900 */}
+        {/* Bottom fade */}
         <div
-          className="pointer-events-none absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-slate-900 to-transparent"
+          className="pointer-events-none absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-white dark:from-slate-900 to-transparent"
           aria-hidden="true"
         />
       </section>
 
       {/* ── 2. Company DNA — Circuit Pathway ──────────────────────────── */}
-      <section className="py-20 sm:py-28">
+      <section className="py-20 sm:py-28 bg-white dark:bg-transparent">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Eyebrow label={t('dna_eyebrow')} />
-            <h2 className="font-black text-2xl sm:text-3xl md:text-4xl text-white">
+            <h2 className="font-black text-2xl sm:text-3xl md:text-4xl text-slate-900 dark:text-white">
               {t('dna_title')}
             </h2>
           </div>
@@ -213,7 +213,7 @@ export default async function AboutPage({ params }: Props) {
                   <div className="relative z-10 shrink-0 mt-1">
                     <div
                       className={[
-                        'w-7 h-7 rounded-full border-2 flex items-center justify-center bg-slate-900',
+                        'w-7 h-7 rounded-full border-2 flex items-center justify-center bg-white dark:bg-slate-900 ring-4 ring-slate-100 dark:ring-slate-900',
                         node.gold
                           ? 'border-brand-accent shadow-[0_0_14px_rgba(234,179,8,0.55)]'
                           : 'border-brand-blue  shadow-[0_0_14px_rgba(75,163,227,0.55)]',
@@ -229,7 +229,7 @@ export default async function AboutPage({ params }: Props) {
                   </div>
 
                   {/* Content */}
-                  <div className="flex-1 rounded-xl border border-slate-700/50 bg-slate-800/40 backdrop-blur-md p-5 sm:p-6 hover:border-brand-blue/40 hover:shadow-[0_0_20px_rgba(59,130,246,0.10)] transition-all duration-300">
+                  <div className="flex-1 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/40 dark:backdrop-blur-md p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-brand-blue/40 dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.10)] transition-all duration-300">
                     <h3
                       className={[
                         'text-base font-black mb-2 uppercase tracking-widest',
@@ -238,7 +238,7 @@ export default async function AboutPage({ params }: Props) {
                     >
                       {node.title[lang]}
                     </h3>
-                    <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                    <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
                       {node.body[lang]}
                     </p>
                   </div>
@@ -250,11 +250,11 @@ export default async function AboutPage({ params }: Props) {
       </section>
 
       {/* ── 3. Heavy Engineering Stats ────────────────────────────────── */}
-      <section className="py-20 sm:py-28 border-y border-slate-700/50">
+      <section className="py-20 sm:py-28 border-y border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Eyebrow label={t('stats_eyebrow')} />
-            <h2 className="font-black text-2xl sm:text-3xl md:text-4xl text-white">
+            <h2 className="font-black text-2xl sm:text-3xl md:text-4xl text-slate-900 dark:text-white">
               {t('stats_title')}
             </h2>
           </div>
@@ -263,12 +263,12 @@ export default async function AboutPage({ params }: Props) {
             {STATS.map((s, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center text-center gap-3 p-6 sm:p-8 rounded-2xl border border-slate-700/50 bg-slate-800/40 backdrop-blur-md hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.12)] transition-all duration-300"
+                className="flex flex-col items-center text-center gap-3 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-800/40 dark:backdrop-blur-md shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-500/50 dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.12)] transition-all duration-300"
               >
                 <p className="font-black text-2xl sm:text-3xl lg:text-4xl text-brand-accent tabular-nums leading-none">
                   {s.value[lang]}
                 </p>
-                <p className="text-slate-300 text-sm sm:text-[0.9rem] font-medium leading-snug">
+                <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-[0.9rem] font-medium leading-snug">
                   {s.label[lang]}
                 </p>
               </div>
@@ -278,67 +278,70 @@ export default async function AboutPage({ params }: Props) {
       </section>
 
       {/* ── 4. Glowing Map — Our Footprint ────────────────────────────── */}
-      <section className="py-20 sm:py-28">
+      <section className="py-20 sm:py-28 bg-white dark:bg-transparent">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Eyebrow label={t('map_eyebrow')} />
-            <h2 className="font-black text-2xl sm:text-3xl md:text-4xl text-white">
+            <h2 className="font-black text-2xl sm:text-3xl md:text-4xl text-slate-900 dark:text-white">
               {t('map_title')}
             </h2>
           </div>
 
-          {/* Google Maps embed */}
-          <div className="relative w-full h-[380px] sm:h-[460px] rounded-2xl overflow-hidden border border-slate-700/50 shadow-[0_8px_40px_rgba(0,0,0,0.5)]">
-            <iframe
-              src="https://maps.google.com/maps?q=26.2172,50.1971&z=14&output=embed&hl=ar"
-              width="100%"
-              height="100%"
-              style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) saturate(0.85) brightness(0.9)' }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title={lang === 'ar' ? 'موقع مقرنا الرئيسي — الخبر' : 'Our HQ Location — Al Khobar'}
-            />
+          {/* Map wrapper with premium border */}
+          <div className="p-2 rounded-2xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-900/50 shadow-sm dark:shadow-[0_8px_40px_rgba(0,0,0,0.5)]">
+            <div className="relative w-full h-[380px] sm:h-[460px] rounded-xl overflow-hidden">
+              <iframe
+                src="https://maps.google.com/maps?q=26.2172,50.1971&z=14&output=embed&hl=ar"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                className="dark:[filter:invert(90%)_hue-rotate(180deg)_saturate(0.85)_brightness(0.9)]"
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title={lang === 'ar' ? 'موقع مقرنا الرئيسي — الخبر' : 'Our HQ Location — Al Khobar'}
+              />
 
-            {/* Label overlay */}
-            <div className="pointer-events-none absolute bottom-4 start-4">
-              <div className="flex items-center gap-2 bg-slate-900/90 backdrop-blur-sm border border-brand-blue/30 rounded-xl px-3 py-2 shadow-lg">
-                <span className="relative flex h-3 w-3 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-blue opacity-60" />
-                  <span className="relative inline-flex h-3 w-3 rounded-full bg-brand-blue shadow-[0_0_8px_rgba(75,163,227,0.8)]" />
-                </span>
-                <span className="text-xs font-bold text-white">
-                  {lang === 'ar' ? 'المقر الرئيسي — الخبر، المنطقة الشرقية' : 'HQ — Al Khobar, Eastern Province'}
-                </span>
+              {/* Label overlay */}
+              <div className="pointer-events-none absolute bottom-4 start-4">
+                <div className="flex items-center gap-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-brand-blue/30 rounded-xl px-3 py-2 shadow-lg">
+                  <span className="relative flex h-3 w-3 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-blue opacity-60" />
+                    <span className="relative inline-flex h-3 w-3 rounded-full bg-brand-blue shadow-[0_0_8px_rgba(75,163,227,0.8)]" />
+                  </span>
+                  <span className="text-xs font-bold text-slate-700 dark:text-white">
+                    {lang === 'ar' ? 'المقر الرئيسي — الخبر، المنطقة الشرقية' : 'HQ — Al Khobar, Eastern Province'}
+                  </span>
+                </div>
               </div>
-            </div>
 
-            {/* Open in Maps button */}
-            <div className="pointer-events-none absolute bottom-4 end-4">
-              <a
-                href="https://maps.app.goo.gl/yZUnxT64cNQq2vHk8"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pointer-events-auto flex items-center gap-1.5 text-xs font-semibold text-brand-blue hover:text-white bg-slate-900/90 hover:bg-brand-blue backdrop-blur-sm border border-brand-blue/30 hover:border-brand-blue px-3 py-2 rounded-xl transition-all duration-200 shadow-lg"
-              >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                  <polyline points="15 3 21 3 21 9"/>
-                  <line x1="10" y1="14" x2="21" y2="3"/>
-                </svg>
-                {lang === 'ar' ? 'فتح في خرائط جوجل' : 'Open in Google Maps'}
-              </a>
+              {/* Open in Maps button */}
+              <div className="pointer-events-none absolute bottom-4 end-4">
+                <a
+                  href="https://maps.app.goo.gl/yZUnxT64cNQq2vHk8"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pointer-events-auto flex items-center gap-1.5 text-xs font-semibold text-brand-blue hover:text-white bg-white/90 dark:bg-slate-900/90 hover:bg-brand-blue backdrop-blur-sm border border-brand-blue/30 hover:border-brand-blue px-3 py-2 rounded-xl transition-all duration-200 shadow-lg"
+                >
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                  {lang === 'ar' ? 'فتح في خرائط جوجل' : 'Open in Google Maps'}
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── 5. Why BetaVolt ───────────────────────────────────────────── */}
-      <section className="py-20 sm:py-28 border-t border-slate-700/50">
+      <section className="py-20 sm:py-28 border-t border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Eyebrow label={t('why_eyebrow')} />
-            <h2 className="font-black text-2xl sm:text-3xl md:text-4xl text-white">
+            <h2 className="font-black text-2xl sm:text-3xl md:text-4xl text-slate-900 dark:text-white">
               {t('why_title')}
             </h2>
           </div>
@@ -347,7 +350,7 @@ export default async function AboutPage({ params }: Props) {
             {WHY.map(({ Icon, gold, title, body }, i) => (
               <div
                 key={i}
-                className="group relative flex flex-col gap-4 p-6 sm:p-7 rounded-2xl border border-slate-700/50 bg-slate-800/40 backdrop-blur-md hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] transition-all duration-300 overflow-hidden"
+                className="group relative flex flex-col gap-4 p-6 sm:p-7 rounded-2xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-800/40 dark:backdrop-blur-md shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-500/50 dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] transition-all duration-300 overflow-hidden"
               >
                 {/* Corner glow on hover */}
                 <div
@@ -363,20 +366,20 @@ export default async function AboutPage({ params }: Props) {
                 {/* Icon box */}
                 <div
                   className={[
-                    'w-12 h-12 rounded-xl flex items-center justify-center border backdrop-blur-sm shrink-0 transition-all duration-300',
+                    'w-12 h-12 rounded-xl flex items-center justify-center border shrink-0 transition-all duration-300',
                     gold
-                      ? 'bg-slate-700/50 border-slate-600/50 text-brand-accent group-hover:bg-brand-accent/15 group-hover:border-brand-accent/40'
-                      : 'bg-slate-700/50 border-slate-600/50 text-brand-blue  group-hover:bg-brand-blue/15  group-hover:border-brand-blue/40',
+                      ? 'bg-amber-50 border-amber-200 text-amber-600 dark:bg-slate-700/50 dark:border-slate-600/50 dark:text-brand-accent group-hover:bg-brand-accent/15 group-hover:border-brand-accent/40'
+                      : 'bg-blue-50  border-blue-200  text-blue-600  dark:bg-slate-700/50 dark:border-slate-600/50 dark:text-brand-blue  group-hover:bg-brand-blue/15  group-hover:border-brand-blue/40',
                   ].join(' ')}
                 >
                   <Icon />
                 </div>
 
-                <h3 className="text-lg font-bold text-white leading-snug">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-snug">
                   {title[lang]}
                 </h3>
 
-                <p className="text-slate-300 text-sm leading-relaxed flex-1">
+                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed flex-1">
                   {body[lang]}
                 </p>
 

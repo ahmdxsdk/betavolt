@@ -22,7 +22,7 @@ export default async function ServicesPage({ params }: Props) {
     <main className="overflow-x-hidden">
 
       {/* ── Hero ── */}
-      <section className="relative pt-32 pb-16 sm:pt-36 sm:pb-20 lg:pt-44 lg:pb-28 bg-grid overflow-hidden">
+      <section className="relative pt-32 pb-16 sm:pt-36 sm:pb-20 lg:pt-44 lg:pb-28 bg-grid bg-slate-50 dark:bg-transparent overflow-hidden">
         {/* Background glow */}
         <div
           className="pointer-events-none absolute inset-0"
@@ -47,7 +47,7 @@ export default async function ServicesPage({ params }: Props) {
           <p className="
             inline-flex items-center gap-2
             text-xs sm:text-sm font-bold tracking-[0.2em] uppercase
-            text-brand-blue/70
+            text-blue-600/80 dark:text-brand-blue/70
             mb-4 sm:mb-5
           ">
             <span className="block w-8 h-px bg-brand-blue/40" aria-hidden="true" />
@@ -58,13 +58,13 @@ export default async function ServicesPage({ params }: Props) {
           <h1 className="
             font-black tracking-tight leading-tight
             text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem]
-            text-white mb-5 sm:mb-6
+            text-slate-900 dark:text-white mb-5 sm:mb-6
           ">
             {t('title')}
           </h1>
 
           <p className="
-            text-slate-400 leading-relaxed
+            text-slate-600 dark:text-slate-400 leading-relaxed
             text-base sm:text-lg lg:text-xl
             max-w-2xl mx-auto
           ">
@@ -74,7 +74,7 @@ export default async function ServicesPage({ params }: Props) {
       </section>
 
       {/* ── Service Categories Grid ── */}
-      <section className="py-16 sm:py-20 lg:py-28">
+      <section className="py-16 sm:py-20 lg:py-28 bg-white dark:bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
             {servicesData.map(({ id, Icon, accent, en, ar }) => {
@@ -86,9 +86,11 @@ export default async function ServicesPage({ params }: Props) {
                     group relative flex flex-col gap-5
                     p-6 sm:p-7
                     rounded-2xl
-                    border border-brand-blue/[0.1]
-                    bg-navy-800/30
-                    hover:border-brand-blue/25 hover:bg-navy-800/50
+                    border border-slate-200 dark:border-brand-blue/[0.1]
+                    bg-white dark:bg-navy-800/30
+                    shadow-sm
+                    hover:border-blue-300 dark:hover:border-brand-blue/25
+                    hover:shadow-xl hover:shadow-blue-900/5 dark:hover:bg-navy-800/50
                     transition-all duration-300
                     overflow-hidden
                   "
@@ -113,20 +115,20 @@ export default async function ServicesPage({ params }: Props) {
                       shrink-0
                       transition-colors duration-300
                       ${accent
-                        ? 'bg-brand-accent/10 text-brand-accent group-hover:bg-brand-accent/15'
-                        : 'bg-brand-blue/10  text-brand-blue  group-hover:bg-brand-blue/15'}
+                        ? 'bg-amber-50 text-amber-600 dark:bg-brand-accent/10 dark:text-brand-accent group-hover:bg-amber-100 dark:group-hover:bg-brand-accent/15'
+                        : 'bg-blue-50  text-blue-600  dark:bg-brand-blue/10  dark:text-brand-blue  group-hover:bg-blue-100  dark:group-hover:bg-brand-blue/15'}
                     `}
                   >
                     <Icon size={22} strokeWidth={1.75} aria-hidden="true" />
                   </div>
 
                   {/* Title */}
-                  <h2 className="text-lg sm:text-xl font-bold text-white leading-snug">
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug">
                     {content.title}
                   </h2>
 
                   {/* Description */}
-                  <p className="text-slate-400 text-sm sm:text-[0.925rem] leading-relaxed">
+                  <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-[0.925rem] leading-relaxed">
                     {content.description}
                   </p>
 
@@ -135,7 +137,7 @@ export default async function ServicesPage({ params }: Props) {
                     {content.items.map((item) => (
                       <li
                         key={item}
-                        className="flex items-start gap-2.5 text-sm text-slate-300"
+                        className="flex items-start gap-2.5 text-sm text-slate-600 dark:text-slate-300"
                       >
                         <span
                           className={`mt-[5px] shrink-0 w-1.5 h-1.5 rounded-full ${accent ? 'bg-brand-accent/70' : 'bg-brand-blue/70'}`}
@@ -166,7 +168,7 @@ export default async function ServicesPage({ params }: Props) {
       </section>
 
       {/* ── CTA Section ── */}
-      <section className="py-16 sm:py-20 lg:py-24">
+      <section className="py-16 sm:py-20 lg:py-24 bg-slate-50 dark:bg-transparent">
         {/* Top divider */}
         <div
           className="pointer-events-none mx-auto max-w-3xl h-px mb-16 sm:mb-20"
@@ -181,11 +183,11 @@ export default async function ServicesPage({ params }: Props) {
           <h2 className="
             font-black tracking-tight
             text-2xl sm:text-3xl md:text-4xl
-            text-white mb-4
+            text-slate-900 dark:text-white mb-4
           ">
             {t('cta_title')}
           </h2>
-          <p className="text-slate-400 text-base sm:text-lg leading-relaxed mb-8 sm:mb-10">
+          <p className="text-slate-700 dark:text-slate-300 text-base sm:text-lg leading-relaxed mb-8 sm:mb-10">
             {t('cta_subtitle')}
           </p>
           <Link

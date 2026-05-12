@@ -47,12 +47,21 @@
 }
 
 @layer utilities {
-  /* Engineering grid background — brand-blue lines */
+  /* Engineering grid background — brand-blue lines + intersection dots */
   .bg-grid {
     background-image:
-      linear-gradient(rgba(75, 163, 227, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(75, 163, 227, 0.05) 1px, transparent 1px);
-    background-size: 60px 60px;
+      radial-gradient(circle, rgba(75, 163, 227, 0.20) 1.2px, transparent 1.2px),
+      linear-gradient(rgba(75, 163, 227, 0.10) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(75, 163, 227, 0.10) 1px, transparent 1px);
+    background-size: 52px 52px;
+  }
+
+  .dark .bg-grid {
+    background-image:
+      radial-gradient(circle, rgba(75, 163, 227, 0.30) 1.2px, transparent 1.2px),
+      linear-gradient(rgba(75, 163, 227, 0.13) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(75, 163, 227, 0.13) 1px, transparent 1px);
+    background-size: 52px 52px;
   }
 
   /* Primary glow — brand-blue */

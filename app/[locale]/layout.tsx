@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { cairo, orbitron } from '@/lib/fonts';
 import Navbar from '@/components/layout/Navbar';
+import ThemeProvider from '@/components/layout/ThemeProvider';
 import '@/app/globals.css';
 
 export const metadata: Metadata = {
@@ -32,14 +33,16 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html
       lang={locale}
       dir={dir}
-      className={`dark ${cairo.variable} ${orbitron.variable}`}
-      style={{ colorScheme: 'dark' }}
+      className={`${cairo.variable} ${orbitron.variable}`}
+      suppressHydrationWarning
     >
-      <body className={`${cairo.className} bg-brand-dark antialiased min-h-screen`}>
-        <NextIntlClientProvider messages={messages}>
-          <Navbar />
-          {children}
-        </NextIntlClientProvider>
+      <body className={`${cairo.className} bg-white dark:bg-slate-950 antialiased min-h-screen transition-colors duration-300`}>
+        <ThemeProvider>
+          <NextIntlClientProvider messages={messages}>
+            <Navbar />
+            {children}
+          </NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

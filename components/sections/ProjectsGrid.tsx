@@ -20,11 +20,12 @@ const FILTERS: FilterDef[] = [
   { key: 'infrastructure',    tKey: 'filter_infrastructure' },
 ];
 
+// Light mode uses opaque soft tints; dark mode keeps the original translucent brand colours
 const CATEGORY_STYLE: Record<string, string> = {
-  'data-centers':     'bg-brand-accent/15 text-brand-accent   border-brand-accent/30',
-  'low-current':      'bg-brand-blue/15   text-brand-blue     border-brand-blue/30',
-  'power-electrical': 'bg-yellow-500/15   text-yellow-400     border-yellow-500/30',
-  'infrastructure':   'bg-emerald-500/15  text-emerald-400    border-emerald-500/30',
+  'data-centers':     'bg-amber-50  text-amber-700   border-amber-200   dark:bg-brand-accent/15 dark:text-brand-accent  dark:border-brand-accent/30',
+  'low-current':      'bg-blue-50   text-blue-700    border-blue-200    dark:bg-brand-blue/15   dark:text-brand-blue    dark:border-brand-blue/30',
+  'power-electrical': 'bg-yellow-50 text-yellow-700  border-yellow-200  dark:bg-yellow-500/15   dark:text-yellow-400    dark:border-yellow-500/30',
+  'infrastructure':   'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15  dark:text-emerald-400   dark:border-emerald-500/30',
 };
 
 const CATEGORY_LABEL: Record<string, { en: string; ar: string }> = {
@@ -74,17 +75,13 @@ function ImageLightbox({ url, onClose }: { url: string; onClose: () => void }) {
       className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-10"
       onClick={onClose}
     >
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/90 backdrop-blur-md" aria-hidden="true" />
-
-      {/* Panel */}
       <div
         role="dialog"
         aria-modal="true"
         className="relative z-10 w-full max-w-5xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute -top-11 end-0 flex items-center gap-2 text-slate-400 hover:text-white transition-colors duration-150 text-sm font-medium"
@@ -93,8 +90,6 @@ function ImageLightbox({ url, onClose }: { url: string; onClose: () => void }) {
           <CloseIcon />
           <span>Close</span>
         </button>
-
-        {/* Image container */}
         <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-[0_32px_100px_rgba(0,0,0,0.9)] bg-black max-h-[82vh] flex items-center justify-center">
           <img
             src={url}
@@ -124,17 +119,13 @@ function VideoLightbox({ url, onClose }: { url: string; onClose: () => void }) {
       className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-8"
       onClick={onClose}
     >
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/90 backdrop-blur-md" aria-hidden="true" />
-
-      {/* Panel */}
       <div
         role="dialog"
         aria-modal="true"
         className="relative z-10 w-full max-w-4xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute -top-11 end-0 flex items-center gap-2 text-slate-400 hover:text-white transition-colors duration-150 text-sm font-medium"
@@ -143,8 +134,6 @@ function VideoLightbox({ url, onClose }: { url: string; onClose: () => void }) {
           <CloseIcon />
           <span>Close</span>
         </button>
-
-        {/* Video container */}
         <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-[0_32px_100px_rgba(0,0,0,0.9)] bg-black aspect-video">
           <video
             src={url}
@@ -183,14 +172,11 @@ function Modal({ project, lang, onClose, onPlayVideo, onViewImage, t }: {
       className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-6"
       onClick={onClose}
     >
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" aria-hidden="true" />
-
-      {/* Panel */}
       <div
         role="dialog"
         aria-modal="true"
-        className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-navy-900 border border-brand-blue/[0.15] shadow-[0_24px_80px_rgba(0,0,0,0.85)]"
+        className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white dark:bg-[#07111F] border border-slate-200 dark:border-slate-800 shadow-2xl dark:shadow-[0_24px_80px_rgba(0,0,0,0.85)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Hero image */}
@@ -203,9 +189,7 @@ function Modal({ project, lang, onClose, onPlayVideo, onViewImage, t }: {
             sizes="(max-width: 768px) 100vw, 672px"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-900 via-black/20 to-transparent" />
-
-          {/* Close */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
           <button
             onClick={onClose}
             aria-label={t('modal_close')}
@@ -217,15 +201,13 @@ function Modal({ project, lang, onClose, onPlayVideo, onViewImage, t }: {
 
         {/* Content */}
         <div className="p-5 sm:p-7">
-
-          {/* Title block */}
           <div className="mb-5">
             <Badge category={project.category} lang={lang} />
-            <h2 className="text-xl sm:text-2xl font-black text-white leading-snug mt-2 mb-1">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-snug mt-2 mb-1">
               {project.title[lang]}
             </h2>
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-slate-400 text-sm flex items-center gap-1.5">
+              <p className="text-slate-500 dark:text-slate-400 text-sm flex items-center gap-1.5">
                 <PinIcon />{project.location[lang]}
               </p>
               {project.mapUrl && (
@@ -242,30 +224,28 @@ function Modal({ project, lang, onClose, onPlayVideo, onViewImage, t }: {
             </div>
           </div>
 
-          {/* Challenge / Solution */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
-            <div className="rounded-xl p-4 bg-navy-800/60 border border-white/[0.05]">
-              <p className="text-[10px] font-black tracking-[0.18em] uppercase text-brand-accent mb-2">
+            <div className="rounded-xl p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+              <p className="text-[10px] font-black tracking-[0.18em] uppercase text-blue-700 dark:text-brand-accent mb-2">
                 {t('modal_challenge')}
               </p>
-              <p className="text-slate-300 text-sm leading-relaxed">{project.challenge[lang]}</p>
+              <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">{project.challenge[lang]}</p>
             </div>
-            <div className="rounded-xl p-4 bg-navy-800/60 border border-white/[0.05]">
-              <p className="text-[10px] font-black tracking-[0.18em] uppercase text-brand-blue mb-2">
+            <div className="rounded-xl p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+              <p className="text-[10px] font-black tracking-[0.18em] uppercase text-blue-600 dark:text-brand-blue mb-2">
                 {t('modal_solution')}
               </p>
-              <p className="text-slate-300 text-sm leading-relaxed">{project.solution[lang]}</p>
+              <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">{project.solution[lang]}</p>
             </div>
           </div>
 
-          {/* Gallery */}
           <div>
-            <p className="text-[10px] font-black tracking-[0.18em] uppercase text-slate-500 mb-3">
+            <p className="text-[10px] font-black tracking-[0.18em] uppercase text-slate-400 dark:text-slate-500 mb-3">
               {t('modal_gallery')}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
               {project.gallery.map((item: GalleryItem, i: number) => (
-                <div key={i} className="relative aspect-video rounded-lg overflow-hidden bg-slate-800">
+                <div key={i} className="relative aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-800">
                   {item.type === 'image' ? (
                     <button
                       onClick={() => onViewImage(item.url)}
@@ -280,7 +260,6 @@ function Modal({ project, lang, onClose, onPlayVideo, onViewImage, t }: {
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                         sizes="(max-width: 640px) calc(50vw - 24px), 210px"
                       />
-                      {/* Scrim + zoom icon on hover */}
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center">
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-10 h-10 rounded-full bg-white/15 border border-white/25 backdrop-blur-sm flex items-center justify-center text-white">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -290,13 +269,11 @@ function Modal({ project, lang, onClose, onPlayVideo, onViewImage, t }: {
                       </div>
                     </button>
                   ) : (
-                    /* ── Video thumbnail card ── */
                     <button
                       onClick={() => onPlayVideo(item.url)}
                       className="group relative w-full h-full flex items-center justify-center"
                       aria-label="Play video"
                     >
-                      {/* Video thumbnail — first frame via preload="metadata" */}
                       <video
                         src={item.url}
                         preload="metadata"
@@ -305,11 +282,7 @@ function Modal({ project, lang, onClose, onPlayVideo, onViewImage, t }: {
                         className="absolute inset-0 w-full h-full object-cover"
                         tabIndex={-1}
                       />
-
-                      {/* Dark scrim so play button pops */}
                       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/55 transition-colors duration-300" />
-
-                      {/* Play button */}
                       <div className="
                         relative z-10
                         w-14 h-14 rounded-full
@@ -324,8 +297,6 @@ function Modal({ project, lang, onClose, onPlayVideo, onViewImage, t }: {
                       ">
                         <PlayIcon />
                       </div>
-
-                      {/* Bottom shimmer line */}
                       <div className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-brand-blue/60 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
                     </button>
                   )}
@@ -333,7 +304,6 @@ function Modal({ project, lang, onClose, onPlayVideo, onViewImage, t }: {
               ))}
             </div>
           </div>
-
         </div>
       </div>
     </div>,
@@ -400,8 +370,8 @@ export default function ProjectsGrid({ locale }: { locale: string }) {
                 text-sm font-semibold border
                 transition-all duration-200
                 ${active
-                  ? 'bg-brand-blue border-brand-blue text-brand-dark shadow-[0_0_12px_rgba(75,163,227,0.35)]'
-                  : 'border-white/10 text-slate-400 hover:border-brand-blue/30 hover:text-white bg-transparent'}
+                  ? 'bg-blue-600 border-blue-600 text-white shadow-[0_0_12px_rgba(75,163,227,0.35)]'
+                  : 'bg-transparent border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400 dark:border-slate-700 dark:text-slate-400 dark:hover:border-brand-blue/40 dark:hover:text-white'}
               `}
             >
               {t(tKey)}
@@ -412,7 +382,7 @@ export default function ProjectsGrid({ locale }: { locale: string }) {
 
       {/* ── Cards Grid ───────────────────────────────────────────────── */}
       {filtered.length === 0 ? (
-        <p className="text-center text-slate-500 py-20">{t('no_results')}</p>
+        <p className="text-center text-slate-500 dark:text-slate-500 py-20">{t('no_results')}</p>
       ) : (
         <div
           key={displayedFilter}
@@ -446,10 +416,12 @@ export default function ProjectsGrid({ locale }: { locale: string }) {
               className="
                 group text-start
                 rounded-2xl overflow-hidden
-                border border-brand-blue/[0.1]
-                bg-navy-800/30
-                hover:border-brand-blue/30 hover:bg-navy-800/50
-                transition-colors duration-300
+                border border-slate-200 dark:border-brand-blue/[0.1]
+                bg-white dark:bg-navy-800/30
+                shadow-sm dark:shadow-none
+                hover:border-blue-400/50 dark:hover:border-brand-blue/30
+                hover:shadow-xl hover:shadow-blue-900/5 dark:hover:bg-navy-800/50
+                transition-all duration-300
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue
               "
             >
@@ -476,11 +448,11 @@ export default function ProjectsGrid({ locale }: { locale: string }) {
               {/* Card body */}
               <div className="p-4 sm:p-5">
                 <Badge category={project.category} lang={lang} />
-                <h3 className="text-base sm:text-[1.05rem] font-bold text-white leading-snug mt-2.5 mb-1.5 line-clamp-2">
+                <h3 className="text-base sm:text-[1.05rem] font-bold text-slate-900 dark:text-white leading-snug mt-2.5 mb-1.5 line-clamp-2">
                   {project.title[lang]}
                 </h3>
                 <div className="flex items-center justify-between gap-2 mt-1">
-                  <p className="text-slate-400 text-sm flex items-center gap-1.5 min-w-0 truncate">
+                  <p className="text-slate-500 dark:text-slate-400 text-sm flex items-center gap-1.5 min-w-0 truncate">
                     <PinIcon />{project.location[lang]}
                   </p>
                   {project.mapUrl && (
@@ -489,7 +461,7 @@ export default function ProjectsGrid({ locale }: { locale: string }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="shrink-0 flex items-center gap-1 text-[11px] font-semibold text-brand-blue/70 hover:text-brand-blue border border-brand-blue/20 hover:border-brand-blue/50 hover:bg-brand-blue/[0.07] px-2 py-1 rounded-md transition-all duration-200"
+                      className="shrink-0 flex items-center gap-1 text-[11px] font-semibold text-blue-600 dark:text-brand-blue/70 hover:text-blue-700 dark:hover:text-brand-blue border border-blue-200 dark:border-brand-blue/20 hover:border-blue-300 dark:hover:border-brand-blue/50 hover:bg-blue-50 dark:hover:bg-brand-blue/[0.07] px-2 py-1 rounded-md transition-all duration-200"
                     >
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                       {lang === 'ar' ? 'الخريطة' : 'Map'}

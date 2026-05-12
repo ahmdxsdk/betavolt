@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Server, Zap, Clock, CheckCircle, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-// ── Config ─────────────────────────────────────────────────────────────────
-
 const STATS: {
   Icon: LucideIcon;
   target: number;
@@ -18,14 +16,11 @@ const STATS: {
   { Icon: CheckCircle, target: 100, suffix: '%',  labelKey: 'stat4_label' },
 ];
 
-const DURATION = 2000; // ms
+const DURATION = 2000;
 
-// ── easeOutExpo — fast start, graceful stop near target ────────────────────
 function easeOutExpo(t: number) {
   return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
 }
-
-// ── Single animated stat cell ──────────────────────────────────────────────
 
 function StatItem({
   Icon,
@@ -81,13 +76,13 @@ function StatItem({
       className={[
         'group flex flex-col items-center gap-3 py-8 sm:py-10 px-4 text-center',
         'transition-all duration-300',
-        'hover:bg-slate-800/40 hover:backdrop-blur-md',
-        'hover:shadow-[0_0_20px_rgba(59,130,246,0.10)]',
+        'hover:bg-white dark:hover:bg-slate-800/60',
+        'hover:shadow-xl hover:shadow-blue-900/5 dark:hover:shadow-none',
         borderClass,
       ].join(' ')}
     >
       {/* Icon */}
-      <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-800/60 border border-slate-700/60 text-brand-blue transition-all duration-300 group-hover:bg-brand-blue/15 group-hover:border-brand-blue/50 group-hover:scale-110 backdrop-blur-sm">
+      <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 transition-all duration-300 group-hover:bg-blue-600 dark:group-hover:bg-blue-600 group-hover:border-blue-600 group-hover:text-white dark:group-hover:text-white group-hover:scale-110">
         <Icon size={18} strokeWidth={1.75} aria-hidden="true" />
       </div>
 
@@ -101,30 +96,27 @@ function StatItem({
       </dt>
 
       {/* Label */}
-      <dd className="text-slate-300 text-sm sm:text-[0.9rem] font-medium leading-snug max-w-[10rem] group-hover:text-white transition-colors duration-300">
+      <dd className="text-slate-500 dark:text-slate-400 text-sm sm:text-[0.9rem] font-medium leading-snug max-w-[10rem] group-hover:text-slate-900 dark:group-hover:text-white transition-colors duration-300">
         {label}
       </dd>
     </div>
   );
 }
 
-// ── Main component ─────────────────────────────────────────────────────────
-
 export default function StatsBar() {
   const t = useTranslations('stats');
 
-  // Pre-compute border classes for the 2-col (mobile) / 4-col (desktop) grid
   const borderClasses = [
-    'border-e border-b border-slate-700/50 lg:border-b-0',       // item 0
-    'border-b border-slate-700/50 lg:border-e lg:border-b-0',    // item 1
-    'border-e border-slate-700/50',                               // item 2
-    '',                                                           // item 3 — no border
+    'border-e border-b border-slate-200 dark:border-slate-800 lg:border-b-0',
+    'border-b border-slate-200 dark:border-slate-800 lg:border-e lg:border-b-0',
+    'border-e border-slate-200 dark:border-slate-800',
+    '',
   ];
 
   return (
     <section
       aria-label="Company statistics"
-      className="relative border-y border-slate-700/50 bg-slate-900"
+      className="relative border-y border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 transition-colors duration-300"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <dl className="grid grid-cols-2 lg:grid-cols-4">
