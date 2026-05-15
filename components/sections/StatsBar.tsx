@@ -4,17 +4,12 @@ import { useEffect, useRef, useState } from 'react';
 import { Server, Zap, Clock, CheckCircle, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-const STATS: {
-  Icon: LucideIcon;
-  target: number;
-  suffix: string;
-  labelKey: 'stat1_label' | 'stat2_label' | 'stat3_label' | 'stat4_label';
-}[] = [
-  { Icon: Zap,         target: 50,  suffix: '+',  labelKey: 'stat1_label' },
-  { Icon: Server,      target: 10,  suffix: '+',  labelKey: 'stat2_label' },
-  { Icon: Clock,       target: 24,  suffix: '/7', labelKey: 'stat3_label' },
-  { Icon: CheckCircle, target: 100, suffix: '%',  labelKey: 'stat4_label' },
-];
+const STAT_ICONS: LucideIcon[] = [Zap, Server, Clock, CheckCircle];
+
+function parseValue(raw: string): { target: number; suffix: string } {
+  const m = raw.match(/^(\d+)(.*)/);
+  return m ? { target: parseInt(m[1], 10), suffix: m[2] } : { target: 0, suffix: raw };
+}
 
 const DURATION = 2000;
 
@@ -113,6 +108,11 @@ export default function StatsBar() {
     '',
   ];
 
+  const stats = ([1, 2, 3, 4] as const).map((n, i) => {
+    const { target, suffix } = parseValue(t(`stat${n}_value`));
+    return { Icon: STAT_ICONS[i], target, suffix, label: t(`stat${n}_label`), borderClass: borderClasses[i] };
+  });
+
   return (
     <section
       aria-label="Company statistics"
@@ -120,14 +120,14 @@ export default function StatsBar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <dl className="grid grid-cols-2 lg:grid-cols-4">
-          {STATS.map(({ Icon, target, suffix, labelKey }, i) => (
+          {stats.map(({ Icon, target, suffix, label, borderClass }, i) => (
             <StatItem
-              key={labelKey}
+              key={i}
               Icon={Icon}
               target={target}
               suffix={suffix}
-              label={t(labelKey)}
-              borderClass={borderClasses[i]}
+              label={label}
+              borderClass={borderClass}
             />
           ))}
         </dl>
