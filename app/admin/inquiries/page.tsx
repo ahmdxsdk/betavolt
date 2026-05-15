@@ -21,6 +21,8 @@ interface Inquiry {
   phone?:     string | null;
   subject:    string;
   message:    string;
+  file_name?: string | null;
+  file_url?:  string | null;
   status:     Status;
   source:     string;
 }
@@ -36,6 +38,8 @@ const L = {
     lbl_email: 'Email', lbl_company: 'Company', lbl_phone: 'Phone',
     lbl_message: 'Message', lbl_source: 'Source', lbl_date: 'Received',
     source_contact: 'Contact Form',
+    source_quote:   'Quote Request',
+    lbl_attachment: 'Attachment',
     btn_markRead: 'Mark as Read', btn_markReplied: 'Mark as Replied',
     btn_delete: 'Delete', btn_refresh: 'Refresh', btn_close: 'Close',
     empty_title: 'Inbox is empty',
@@ -52,6 +56,8 @@ const L = {
     lbl_email: 'البريد الإلكتروني', lbl_company: 'الشركة', lbl_phone: 'الهاتف',
     lbl_message: 'الرسالة', lbl_source: 'المصدر', lbl_date: 'تاريخ الاستلام',
     source_contact: 'نموذج التواصل',
+    source_quote:   'طلب عرض سعر',
+    lbl_attachment: 'المرفق',
     btn_markRead: 'تعيين كمقروء', btn_markReplied: 'تعيين كمُجاب',
     btn_delete: 'حذف', btn_refresh: 'تحديث', btn_close: 'إغلاق',
     empty_title: 'صندوق الوارد فارغ',
@@ -80,7 +86,7 @@ const STATUS_CFG: Record<Status, { en: string; ar: string; cls: string; dot: str
   },
 };
 
-/* ─── Subject translation map ──────────────────────────── */
+/* ─── Subject translation maps ─────────────────────────── */
 const SUBJECT_MAP: Record<string, { en: string; ar: string }> = {
   'infrastructure':   { en: 'Infrastructure',               ar: 'البنية التحتية'                  },
   'data-centers':     { en: 'Data Centers',                 ar: 'مراكز البيانات'                  },
@@ -90,8 +96,38 @@ const SUBJECT_MAP: Record<string, { en: string; ar: string }> = {
   'automation':       { en: 'Industrial Automation',        ar: 'الأتمتة الصناعية'                },
 };
 
+const PROJECT_TYPE_AR: Record<string, string> = {
+  'Smart Infrastructure':  'البنية التحتية الذكية',
+  'Data Centers':          'مراكز البيانات',
+  'Solar Energy':          'الطاقة الشمسية',
+  'Low Current Systems':   'أنظمة التيار الخفيف',
+  'Power & Electrical':    'القوى والكهرباء',
+  'Smart Building (BMS)':  'المباني الذكية (BMS)',
+  'Industrial Automation': 'الأتمتة الصناعية',
+};
+
+const TIMELINE_AR: Record<string, string> = {
+  'Immediate (ASAP)': 'فوري (أقرب وقت ممكن)',
+  '1 – 3 Months':     'من 1 إلى 3 أشهر',
+  '3 – 6 Months':     'من 3 إلى 6 أشهر',
+  '6+ Months':        'أكثر من 6 أشهر',
+};
+
 function translateSubject(raw: string, lang: Lang): string {
-  return SUBJECT_MAP[raw]?.[lang] ?? raw;
+  if (SUBJECT_MAP[raw]) return SUBJECT_MAP[raw][lang];
+
+  // Quote form format: "Project Type EN — Timeline EN"
+  if (raw.includes(' — ')) {
+    const sep   = raw.indexOf(' — ');
+    const type  = raw.slice(0, sep);
+    const tl    = raw.slice(sep + 3);
+    if (lang === 'ar') {
+      return `${PROJECT_TYPE_AR[type] ?? type} — ${TIMELINE_AR[tl] ?? tl}`;
+    }
+    return raw;
+  }
+
+  return raw;
 }
 
 /* ─── Helpers ──────────────────────────────────────────── */
@@ -163,8 +199,10 @@ export default function InquiriesPage() {
   const [hasError,   setHasError]   = useState(false);
   const [search,     setSearch]     = useState('');
   const [filter,     setFilter]     = useState<Status | 'all'>('all');
-  const [selected,   setSelected]   = useState<Inquiry | null>(null);
-  const [actionLoad, setActionLoad] = useState(false);
+  const [selected,    setSelected]    = useState<Inquiry | null>(null);
+  const [actionLoad,  setActionLoad]  = useState(false);
+  const [viewerUrl,   setViewerUrl]   = useState<string | null>(null);
+  const [viewerName,  setViewerName]  = useState<string>('');
 
   const t   = L[lang];
   const dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -262,14 +300,15 @@ export default function InquiriesPage() {
 
   /* ── Detail meta items ── */
   const metaItems = panelContent ? [
-    { icon: Mail,      label: t.lbl_email,   value: panelContent.email           },
-    panelContent.company  ? { icon: Building2, label: t.lbl_company, value: panelContent.company } : null,
-    panelContent.phone    ? { icon: Phone,     label: t.lbl_phone,   value: panelContent.phone   } : null,
-    { icon: Tag,       label: t.lbl_source,  value: t.source_contact         },
-    { icon: Calendar,  label: t.lbl_date,    value: formatDate(panelContent.created_at, lang) },
+    panelContent.email   ? { icon: Mail,      label: t.lbl_email,   value: panelContent.email   } : null,
+    panelContent.company ? { icon: Building2, label: t.lbl_company, value: panelContent.company } : null,
+    panelContent.phone   ? { icon: Phone,     label: t.lbl_phone,   value: panelContent.phone   } : null,
+    { icon: Tag,      label: t.lbl_source, value: panelContent.source === 'quote_form' ? t.source_quote : t.source_contact },
+    { icon: Calendar, label: t.lbl_date,   value: formatDate(panelContent.created_at, lang) },
   ].filter(Boolean) as { icon: React.ElementType; label: string; value: string }[] : [];
 
   return (
+    <>
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950" dir={dir}>
 
       {/* ── Sticky header ─────────────────────────────────── */}
@@ -508,6 +547,36 @@ export default function InquiriesPage() {
                   {t.lbl_message}
                 </p>
                 <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">{panelContent.message}</p>
+
+                {panelContent.file_name && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (panelContent.file_url) {
+                        setViewerUrl(panelContent.file_url);
+                        setViewerName(panelContent.file_name ?? '');
+                      }
+                    }}
+                    disabled={!panelContent.file_url}
+                    className={[
+                      'mt-3 w-full flex items-center gap-2 px-3 py-2.5 rounded-lg border text-start transition-colors duration-150',
+                      panelContent.file_url
+                        ? 'border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-950/40 cursor-pointer'
+                        : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30 cursor-default opacity-60',
+                    ].join(' ')}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-blue-500" aria-hidden="true">
+                      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <span className="text-[11px] font-bold tracking-wide uppercase text-blue-600 dark:text-blue-400 shrink-0">{t.lbl_attachment}:</span>
+                    <span className="flex-1 text-xs text-blue-700 dark:text-blue-300 truncate font-medium">{panelContent.file_name}</span>
+                    {panelContent.file_url && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-blue-400" aria-hidden="true">
+                        <path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                      </svg>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
 
@@ -546,5 +615,66 @@ export default function InquiriesPage() {
         )}
       </aside>
     </div>
+
+    {/* ── Attachment Viewer Modal ── */}
+    {viewerUrl && (
+      <div
+        className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md"
+        onClick={() => setViewerUrl(null)}
+      >
+        <div
+          className="relative w-full max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden bg-white dark:bg-slate-900 shadow-2xl flex flex-col"
+          onClick={e => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-blue-500">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <span className="flex-1 text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{viewerName}</span>
+            <a
+              href={viewerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline px-2 py-1"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              </svg>
+              {lang === 'ar' ? 'فتح في تبويب' : 'Open in tab'}
+            </a>
+            <button
+              onClick={() => setViewerUrl(null)}
+              className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 transition-colors"
+            >
+              <X size={16} strokeWidth={2.5} />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-auto min-h-0">
+            {/\.(jpg|jpeg|png|gif|webp)$/i.test(viewerName) ? (
+              /* Image viewer */
+              <div className="flex items-center justify-center p-4 min-h-[400px] bg-slate-100 dark:bg-slate-800">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={viewerUrl}
+                  alt={viewerName}
+                  className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-md"
+                />
+              </div>
+            ) : (
+              /* PDF / doc viewer via iframe */
+              <iframe
+                src={viewerUrl}
+                title={viewerName}
+                className="w-full h-[70vh] border-0"
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

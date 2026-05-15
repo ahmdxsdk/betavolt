@@ -67,6 +67,8 @@
     "subtitle": "Provide your project details and our engineering team will prepare a customised quote within 24 hours.",
     "field_name": "Contact Person",
     "field_company": "Company Name",
+    "field_email": "Email Address",
+    "field_phone": "Phone Number",
     "field_project_type": "Project Type",
     "field_project_placeholder": "Select project type",
     "field_project_smart": "Smart Infrastructure",

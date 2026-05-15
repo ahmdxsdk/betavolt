@@ -67,6 +67,8 @@
     "subtitle": "قدّم تفاصيل مشروعك وسيعدّ فريقنا الهندسي عرضاً مخصصاً لك خلال 24 ساعة.",
     "field_name": "الشخص المسؤول",
     "field_company": "اسم الشركة",
+    "field_email": "البريد الإلكتروني",
+    "field_phone": "رقم الجوال",
     "field_project_type": "نوع المشروع",
     "field_project_placeholder": "اختر نوع المشروع",
     "field_project_smart": "البنية التحتية الذكية",

@@ -4,8 +4,14 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslations, useLocale } from 'next-intl';
 import { CheckCircle, AlertCircle, Upload, X, Send, FileText } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 
 import type { ModalOption } from '@/lib/load-quote-modal-options';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+);
 
 type Status = 'idle' | 'sending' | 'success' | 'error';
 
@@ -25,9 +31,11 @@ export default function QuoteModal({ isOpen, onClose, projectTypes, timelines }:
   const [visible, setVisible]     = useState(false);
   const [status, setStatus]       = useState<Status>('idle');
   const [fileName, setFileName]   = useState<string | null>(null);
+  const [fileObj,  setFileObj]    = useState<File | null>(null);
   const [dragging, setDragging]   = useState(false);
-  const formRef  = useRef<HTMLFormElement>(null);
-  const firstRef = useRef<HTMLInputElement>(null);
+  const formRef     = useRef<HTMLFormElement>(null);
+  const firstRef    = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -69,12 +77,30 @@ export default function QuoteModal({ isOpen, onClose, projectTypes, timelines }:
   function handleFile(file: File | undefined) {
     if (!file) return;
     setFileName(file.name);
+    setFileObj(file);
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus('sending');
     const fd = new FormData(e.currentTarget);
+
+    let file_url: string | undefined;
+    if (fileObj) {
+      const ext  = fileObj.name.split('.').pop();
+      const uid  = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      const path = `quotes/${uid}.${ext}`;
+      const { data, error } = await supabase.storage
+        .from('attachments')
+        .upload(path, fileObj, { upsert: false });
+      if (!error && data) {
+        const { data: { publicUrl } } = supabase.storage
+          .from('attachments')
+          .getPublicUrl(data.path);
+        file_url = publicUrl;
+      }
+    }
+
     try {
       const res = await fetch('/api/quote', {
         method: 'POST',
@@ -82,16 +108,21 @@ export default function QuoteModal({ isOpen, onClose, projectTypes, timelines }:
         body: JSON.stringify({
           name:         fd.get('name'),
           company:      fd.get('company'),
+          email:        fd.get('email'),
+          phone:        fd.get('phone'),
           project_type: fd.get('project_type'),
           timeline:     fd.get('timeline'),
           requirements: fd.get('requirements'),
           file_name:    fileName ?? undefined,
+          file_url,
         }),
       });
       if (!res.ok) throw new Error();
       setStatus('success');
       formRef.current?.reset();
       setFileName(null);
+      setFileObj(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     } catch {
       setStatus('error');
     }
@@ -245,6 +276,35 @@ export default function QuoteModal({ isOpen, onClose, projectTypes, timelines }:
                 </div>
               </div>
 
+              {/* Row 1b: Email + Phone */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="qm-email" className={labelCls}>{t('field_email')}</label>
+                  <input
+                    id="qm-email"
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    className={inputCls}
+                    placeholder={t('field_email')}
+                    dir="ltr"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="qm-phone" className={labelCls}>{t('field_phone')}</label>
+                  <input
+                    id="qm-phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    className={inputCls}
+                    placeholder={t('field_phone')}
+                    dir="ltr"
+                  />
+                </div>
+              </div>
+
               {/* Row 2: Project Type + Timeline */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -258,7 +318,7 @@ export default function QuoteModal({ isOpen, onClose, projectTypes, timelines }:
                   >
                     <option value="" disabled>{t('field_project_placeholder')}</option>
                     {projectTypes.map((opt, i) => (
-                      <option key={i} value={`type-${i}`}>
+                      <option key={i} value={opt.en}>
                         {locale === 'ar' ? opt.ar : opt.en}
                       </option>
                     ))}
@@ -275,7 +335,7 @@ export default function QuoteModal({ isOpen, onClose, projectTypes, timelines }:
                   >
                     <option value="" disabled>{t('field_timeline_placeholder')}</option>
                     {timelines.map((opt, i) => (
-                      <option key={i} value={`timeline-${i}`}>
+                      <option key={i} value={opt.en}>
                         {locale === 'ar' ? opt.ar : opt.en}
                       </option>
                     ))}
@@ -286,6 +346,15 @@ export default function QuoteModal({ isOpen, onClose, projectTypes, timelines }:
               {/* Row 3: File Upload */}
               <div>
                 <label className={labelCls}>{t('field_upload')}</label>
+
+                {/* Single persistent input — avoids onChange loss on state switch */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,application/pdf,.jpg,.jpeg,image/jpeg,.png,image/png"
+                  className="sr-only"
+                  onChange={(e) => handleFile(e.target.files?.[0])}
+                />
 
                 {fileName ? (
                   /* ── File selected state ── */
@@ -298,20 +367,24 @@ export default function QuoteModal({ isOpen, onClose, projectTypes, timelines }:
                     </p>
                     <button
                       type="button"
-                      onClick={() => setFileName(null)}
+                      onClick={() => {
+                        setFileName(null);
+                        setFileObj(null);
+                        if (fileInputRef.current) fileInputRef.current.value = '';
+                      }}
                       className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-blue-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors duration-150"
                       aria-label="Remove file"
                     >
                       <X size={14} strokeWidth={2.5} />
                     </button>
-                    {/* hidden input keeps the name accessible in FormData */}
-                    <input id="qm-file" name="file" type="file" accept=".pdf,.jpg,.jpeg,.png" className="sr-only"
-                      onChange={(e) => handleFile(e.target.files?.[0])} />
                   </div>
                 ) : (
                   /* ── Empty / drag state ── */
-                  <label
-                    htmlFor="qm-file"
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => fileInputRef.current?.click()}
+                    onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
                     onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
                     onDragLeave={() => setDragging(false)}
                     onDrop={(e) => {
@@ -338,15 +411,7 @@ export default function QuoteModal({ isOpen, onClose, projectTypes, timelines }:
                         {t('field_upload_hint')}
                       </p>
                     </div>
-                    <input
-                      id="qm-file"
-                      name="file"
-                      type="file"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      className="sr-only"
-                      onChange={(e) => handleFile(e.target.files?.[0])}
-                    />
-                  </label>
+                  </div>
                 )}
               </div>
 

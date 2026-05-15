@@ -6,31 +6,35 @@ export async function POST(request: NextRequest) {
     const body = await request.json() as {
       name: string;
       company: string;
+      email?: string;
+      phone?: string;
       project_type: string;
       timeline: string;
       requirements: string;
       file_name?: string;
+      file_url?: string;
     };
 
-    const { name, company, project_type, timeline, requirements, file_name } = body;
+    const { name, company, email, phone, project_type, timeline, requirements, file_name, file_url } = body;
 
     if (!name || !company || !project_type || !timeline || !requirements) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const subject  = `${project_type} — ${timeline}`;
-    const message  = file_name
-      ? `${requirements}\n\n[مرفق: ${file_name}]`
-      : requirements;
+    const subject = `${project_type} — ${timeline}`;
 
     const supabase = await createSupabaseServerClient();
     const { error } = await supabase.from('inquiries').insert({
       full_name: name,
       company,
+      email:     email   || null,
+      phone:     phone   || null,
       subject,
-      message,
-      source: 'quote_form',
-      status: 'new',
+      message:   requirements,
+      file_name: file_name || null,
+      file_url:  file_url  || null,
+      source:    'quote_form',
+      status:    'new',
     });
 
     if (error) throw error;
