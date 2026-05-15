@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { getContent } from '@/lib/content-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,12 +28,17 @@ interface AboutContent {
   map:   MapCfg;
 }
 
-function loadAboutContent(): AboutContent {
+async function loadAboutContent(): Promise<AboutContent> {
+  const EMPTY: AboutContent = { dna: [], stats: [], why: [], map: { embedUrl: '', mapsUrl: '', label: { en: '', ar: '' } } };
+  try {
+    const db = await getContent('about-content');
+    if (db) return db as unknown as AboutContent;
+  } catch { /* fall through */ }
   try {
     const raw = readFileSync(join(process.cwd(), 'data', 'about-content.json'), 'utf-8');
     return JSON.parse(raw);
   } catch {
-    return { dna: [], stats: [], why: [], map: { embedUrl: '', mapsUrl: '', label: { en: '', ar: '' } } };
+    return EMPTY;
   }
 }
 
@@ -119,7 +125,7 @@ export default async function AboutPage({ params }: Props) {
   const { locale } = await params;
   const lang = locale as Lang;
   const t    = await getTranslations('about');
-  const { dna, stats, why, map } = loadAboutContent();
+  const { dna, stats, why, map } = await loadAboutContent();
 
   return (
     <main className="overflow-x-hidden bg-white dark:bg-slate-900 text-slate-900 dark:text-white">

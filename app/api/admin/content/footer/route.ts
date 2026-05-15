@@ -1,36 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFileSync, writeFileSync } from 'fs';
+import { revalidateTag } from 'next/cache';
+import { readFileSync } from 'fs';
 import { join } from 'path';
+import { getContent, setContent } from '@/lib/content-store';
 
-const messagesDir   = join(process.cwd(), 'messages');
-const footerPath    = join(process.cwd(), 'data', 'footer-content.json');
+const messagesDir = join(process.cwd(), 'messages');
+const footerPath  = join(process.cwd(), 'data', 'footer-content.json');
 
 interface FooterContent {
-  social: { linkedin: string; twitter: string; youtube: string; whatsapp: string };
+  social: {
+    linkedin: string; twitter: string; youtube: string; whatsapp: string;
+    facebook: string; instagram: string; snapchat: string; tiktok: string;
+  };
 }
 
-function readMessages(locale: 'en' | 'ar') {
+function staticMessages(locale: 'en' | 'ar') {
   return JSON.parse(readFileSync(join(messagesDir, `${locale}.json`), 'utf-8'));
 }
-function writeMessages(locale: 'en' | 'ar', data: Record<string, unknown>) {
-  writeFileSync(join(messagesDir, `${locale}.json`), JSON.stringify(data, null, 2) + '\n', 'utf-8');
+
+async function getMessages(locale: 'en' | 'ar'): Promise<Record<string, unknown>> {
+  return (await getContent(`messages.${locale}`)) ?? staticMessages(locale);
 }
-function readFooterContent(): FooterContent {
+
+async function getFooterContent(): Promise<FooterContent> {
+  const db = await getContent('footer-content');
+  if (db) return db as unknown as FooterContent;
   return JSON.parse(readFileSync(footerPath, 'utf-8'));
-}
-function writeFooterContent(data: FooterContent) {
-  writeFileSync(footerPath, JSON.stringify(data, null, 2) + '\n', 'utf-8');
 }
 
 export async function GET() {
   try {
-    const [en, ar] = [readMessages('en'), readMessages('ar')];
+    const [en, ar, footerContent] = await Promise.all([
+      getMessages('en'),
+      getMessages('ar'),
+      getFooterContent(),
+    ]);
     return NextResponse.json({
       pageContent: {
         en: en.footer as Record<string, string>,
         ar: ar.footer as Record<string, string>,
       },
-      footerContent: readFooterContent(),
+      footerContent,
     });
   } catch (err) {
     console.error('[GET /api/admin/content/footer]', err);
@@ -47,10 +57,14 @@ export async function POST(req: NextRequest) {
     if (!body.pageContent || !body.footerContent) {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
     }
-    const [fullEn, fullAr] = [readMessages('en'), readMessages('ar')];
-    writeMessages('en', { ...fullEn, footer: body.pageContent.en });
-    writeMessages('ar', { ...fullAr, footer: body.pageContent.ar });
-    writeFooterContent(body.footerContent);
+
+    const [baseEn, baseAr] = await Promise.all([getMessages('en'), getMessages('ar')]);
+    await Promise.all([
+      setContent('messages.en', { ...baseEn, footer: body.pageContent.en }),
+      setContent('messages.ar', { ...baseAr, footer: body.pageContent.ar }),
+      setContent('footer-content', body.footerContent),
+    ]);
+    revalidateTag('site-messages');
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error('[POST /api/admin/content/footer]', err);

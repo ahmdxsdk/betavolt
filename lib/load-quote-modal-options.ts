@@ -11,12 +11,17 @@ export interface QuoteModalOptions {
   timelines:    ModalOption[];
 }
 
-const DEFAULTS: QuoteModalOptions = {
-  projectTypes: [],
-  timelines:    [],
-};
+const DEFAULTS: QuoteModalOptions = { projectTypes: [], timelines: [] };
 
-export function loadQuoteModalOptions(): QuoteModalOptions {
+export async function loadQuoteModalOptions(): Promise<QuoteModalOptions> {
+  try {
+    /* Try Supabase first (admin-editable) */
+    const { getContent } = await import('./content-store');
+    const db = await getContent('quote-modal-options');
+    if (db) return db as unknown as QuoteModalOptions;
+  } catch { /* fall through */ }
+
+  /* Fall back to bundled static file */
   try {
     return JSON.parse(
       readFileSync(join(process.cwd(), 'data', 'quote-modal-options.json'), 'utf-8'),

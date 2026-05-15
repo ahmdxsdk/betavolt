@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { getContent } from '@/lib/content-store';
 import Image from 'next/image';
 import { Link } from '@/navigation';
 import { getTranslations } from 'next-intl/server';
@@ -13,11 +14,13 @@ interface ContactDetails {
   whatsapp:       string;
 }
 
-function loadContactDetails(): ContactDetails {
+async function loadContactDetails(): Promise<ContactDetails> {
   try {
-    return JSON.parse(
-      readFileSync(join(process.cwd(), 'data', 'contact-details.json'), 'utf-8'),
-    );
+    const db = await getContent('contact-details');
+    if (db) return db as unknown as ContactDetails;
+  } catch { /* fall through */ }
+  try {
+    return JSON.parse(readFileSync(join(process.cwd(), 'data', 'contact-details.json'), 'utf-8'));
   } catch {
     return { email_general: '', email_projects: '', phone: '', whatsapp: '' };
   }
@@ -31,11 +34,13 @@ interface FooterContent {
   };
 }
 
-function loadFooterContent(): FooterContent {
+async function loadFooterContent(): Promise<FooterContent> {
   try {
-    return JSON.parse(
-      readFileSync(join(process.cwd(), 'data', 'footer-content.json'), 'utf-8'),
-    );
+    const db = await getContent('footer-content');
+    if (db) return db as unknown as FooterContent;
+  } catch { /* fall through */ }
+  try {
+    return JSON.parse(readFileSync(join(process.cwd(), 'data', 'footer-content.json'), 'utf-8'));
   } catch {
     return { social: { linkedin: '', twitter: '', youtube: '', whatsapp: '', facebook: '', instagram: '', snapchat: '', tiktok: '' } };
   }
@@ -140,8 +145,10 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
 
 /* ─── Footer ─────────────────────────────────────────── */
 export default async function Footer() {
-  const details       = loadContactDetails();
-  const footerContent = loadFooterContent();
+  const [details, footerContent] = await Promise.all([
+    loadContactDetails(),
+    loadFooterContent(),
+  ]);
   const year          = new Date().getFullYear();
 
   const [tf, tn, tc] = await Promise.all([

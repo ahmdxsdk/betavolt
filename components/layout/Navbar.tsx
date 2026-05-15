@@ -10,7 +10,7 @@ import { loadQuoteModalOptions } from '@/lib/load-quote-modal-options';
 
 export default async function Navbar() {
   const t       = await getTranslations('nav');
-  const options = loadQuoteModalOptions();
+  const options = await loadQuoteModalOptions();
 
   const links = [
     { href: '/services',  label: t('services'), route: true  },
