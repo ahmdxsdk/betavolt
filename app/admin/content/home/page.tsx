@@ -292,14 +292,6 @@ export default function HomeContentPage() {
       {/* ── A — Hero ─────────────────────────────────────── */}
       <SectionCard title={t.sectionA} badge="A" defaultOpen>
 
-        <BiField
-          label={t.heroBadge}
-          valueEn={en('hero', 'badge')}         valueAr={ar('hero', 'badge')}
-          onEn={v => setEn('hero', 'badge', v)} onAr={v => setAr('hero', 'badge', v)}
-          placeholderEn="Certified Electrical, Low Current & Smart Infrastructure Contractor"
-          placeholderAr="مقاول معتمد في الكهرباء والتيار الخفيف والبنية التحتية الذكية"
-        />
-
         <FieldDivider label={t.headlineDiv} />
 
         <BiField
