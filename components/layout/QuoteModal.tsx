@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslations, useLocale } from 'next-intl';
-import { CheckCircle, AlertCircle, Upload, X, Send } from 'lucide-react';
+import { CheckCircle, AlertCircle, Upload, X, Send, FileText } from 'lucide-react';
 
 import type { ModalOption } from '@/lib/load-quote-modal-options';
 
@@ -286,45 +286,68 @@ export default function QuoteModal({ isOpen, onClose, projectTypes, timelines }:
               {/* Row 3: File Upload */}
               <div>
                 <label className={labelCls}>{t('field_upload')}</label>
-                <label
-                  htmlFor="qm-file"
-                  onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-                  onDragLeave={() => setDragging(false)}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setDragging(false);
-                    handleFile(e.dataTransfer.files[0]);
-                  }}
-                  className={[
-                    'flex flex-col items-center justify-center gap-2 w-full px-6 py-8 rounded-xl cursor-pointer',
-                    'border-2 border-dashed transition-all duration-200',
-                    dragging
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
-                      : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 hover:border-blue-400 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/10',
-                  ].join(' ')}
-                >
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                    <Upload size={18} strokeWidth={1.75} />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                      {fileName ?? t('field_upload_cta')}
+
+                {fileName ? (
+                  /* ── File selected state ── */
+                  <div className="flex items-center gap-3 w-full px-4 py-3.5 rounded-xl border-2 border-blue-500 bg-blue-50 dark:bg-blue-950/20">
+                    <div className="shrink-0 w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                      <FileText size={16} strokeWidth={1.75} />
+                    </div>
+                    <p className="flex-1 min-w-0 text-sm font-semibold text-blue-700 dark:text-blue-300 truncate">
+                      {fileName}
                     </p>
-                    {!fileName && (
+                    <button
+                      type="button"
+                      onClick={() => setFileName(null)}
+                      className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-blue-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors duration-150"
+                      aria-label="Remove file"
+                    >
+                      <X size={14} strokeWidth={2.5} />
+                    </button>
+                    {/* hidden input keeps the name accessible in FormData */}
+                    <input id="qm-file" name="file" type="file" accept=".pdf,.jpg,.jpeg,.png" className="sr-only"
+                      onChange={(e) => handleFile(e.target.files?.[0])} />
+                  </div>
+                ) : (
+                  /* ── Empty / drag state ── */
+                  <label
+                    htmlFor="qm-file"
+                    onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                    onDragLeave={() => setDragging(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDragging(false);
+                      handleFile(e.dataTransfer.files[0]);
+                    }}
+                    className={[
+                      'flex flex-col items-center justify-center gap-2 w-full px-6 py-8 rounded-xl cursor-pointer',
+                      'border-2 border-dashed transition-all duration-200',
+                      dragging
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
+                        : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 hover:border-blue-400 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/10',
+                    ].join(' ')}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                      <Upload size={18} strokeWidth={1.75} />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                        {t('field_upload_cta')}
+                      </p>
                       <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
                         {t('field_upload_hint')}
                       </p>
-                    )}
-                  </div>
-                  <input
-                    id="qm-file"
-                    name="file"
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    className="sr-only"
-                    onChange={(e) => handleFile(e.target.files?.[0])}
-                  />
-                </label>
+                    </div>
+                    <input
+                      id="qm-file"
+                      name="file"
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      className="sr-only"
+                      onChange={(e) => handleFile(e.target.files?.[0])}
+                    />
+                  </label>
+                )}
               </div>
 
               {/* Row 4: Requirements */}
