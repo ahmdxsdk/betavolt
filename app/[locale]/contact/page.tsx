@@ -59,7 +59,7 @@ function InfoRow({
   label,
   children,
 }: {
-  icon: () => JSX.Element;
+  icon: () => React.ReactElement;
   label: string;
   children: React.ReactNode;
 }) {
