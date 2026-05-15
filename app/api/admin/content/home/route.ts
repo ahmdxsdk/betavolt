@@ -14,10 +14,14 @@ async function getMessages(locale: 'en' | 'ar'): Promise<Record<string, unknown>
   return (await getContent(`messages.${locale}`)) ?? staticMessages(locale);
 }
 
+const HOME_SECTIONS = ['hero', 'stats', 'services_section'] as const;
+
 export async function GET() {
   try {
     const [en, ar] = await Promise.all([getMessages('en'), getMessages('ar')]);
-    return NextResponse.json({ en: en.home, ar: ar.home });
+    const pick = (msg: Record<string, unknown>) =>
+      Object.fromEntries(HOME_SECTIONS.map(k => [k, msg[k] ?? {}]));
+    return NextResponse.json({ en: pick(en), ar: pick(ar) });
   } catch (err) {
     console.error('[GET /api/admin/content/home]', err);
     return NextResponse.json({ error: 'Failed to read messages' }, { status: 500 });
@@ -33,8 +37,8 @@ export async function POST(req: NextRequest) {
 
     const [baseEn, baseAr] = await Promise.all([getMessages('en'), getMessages('ar')]);
     await Promise.all([
-      setContent('messages.en', { ...baseEn, home: body.en }),
-      setContent('messages.ar', { ...baseAr, home: body.ar }),
+      setContent('messages.en', { ...baseEn, ...body.en }),
+      setContent('messages.ar', { ...baseAr, ...body.ar }),
     ]);
     revalidateTag('site-messages');
     return NextResponse.json({ ok: true });
