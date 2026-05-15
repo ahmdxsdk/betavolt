@@ -17,7 +17,7 @@ type Props = {
 export default async function ServicesPage({ params }: Props) {
   const { locale } = await params;
   const t       = await getTranslations('services_page');
-  const options = loadQuoteModalOptions();
+  const options = await loadQuoteModalOptions();
   const lang = locale as 'en' | 'ar';
 
   return (
