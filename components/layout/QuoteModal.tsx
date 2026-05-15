@@ -74,11 +74,19 @@ export default function QuoteModal({ isOpen, onClose, projectTypes, timelines }:
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus('sending');
-    const data = new FormData(e.currentTarget);
+    const fd = new FormData(e.currentTarget);
     try {
       const res = await fetch('/api/quote', {
         method: 'POST',
-        body: data,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:         fd.get('name'),
+          company:      fd.get('company'),
+          project_type: fd.get('project_type'),
+          timeline:     fd.get('timeline'),
+          requirements: fd.get('requirements'),
+          file_name:    fileName ?? undefined,
+        }),
       });
       if (!res.ok) throw new Error();
       setStatus('success');
