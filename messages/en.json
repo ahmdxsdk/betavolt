@@ -62,6 +62,38 @@
     "cta_subtitle": "Contact our engineering team for a detailed consultation and project quote.",
     "cta_button": "Get a Free Quote"
   },
+  "quote_modal": {
+    "title": "Request a Technical Proposal",
+    "subtitle": "Provide your project details and our engineering team will prepare a customised quote within 24 hours.",
+    "field_name": "Contact Person",
+    "field_company": "Company Name",
+    "field_project_type": "Project Type",
+    "field_project_placeholder": "Select project type",
+    "field_project_smart": "Smart Infrastructure",
+    "field_project_data": "Data Centers",
+    "field_project_solar": "Solar Energy",
+    "field_project_low_current": "Low Current Systems",
+    "field_project_power": "Power & Electrical",
+    "field_project_bms": "Smart Building (BMS)",
+    "field_project_automation": "Industrial Automation",
+    "field_timeline": "Estimated Timeline",
+    "field_timeline_placeholder": "Select timeline",
+    "field_timeline_immediate": "Immediate (ASAP)",
+    "field_timeline_1_3": "1 – 3 Months",
+    "field_timeline_3_6": "3 – 6 Months",
+    "field_timeline_6_plus": "6+ Months",
+    "field_upload": "Project Specifications / BoQ",
+    "field_upload_cta": "Click to upload or drag & drop",
+    "field_upload_hint": "PDF, JPG, PNG — max 10 MB each",
+    "field_requirements": "Detailed Requirements",
+    "field_requirements_placeholder": "Describe your project scope, technical requirements, and any constraints…",
+    "submit": "Submit Quote Request",
+    "submitting": "Submitting…",
+    "success_title": "Request Submitted",
+    "success_body": "Our engineering team will review your requirements and contact you within 24 hours.",
+    "success_close": "Close",
+    "error": "Something went wrong. Please try again or email us directly."
+  },
   "contact_page": {
     "eyebrow": "Get In Touch",
     "title": "Connect with Our Engineering Team",
@@ -76,11 +108,12 @@
     "hours_label": "Working Hours",
     "hours_value": "Sunday – Thursday  |  08:00 AM – 05:00 PM",
     "promise_title": "What to Expect",
-    "promise_body": "An engineer will review your inquiry and contact you within 24 hours.",
+    "promise_body": "Our support team will review your inquiry and get in touch with you as soon as possible.",
     "form_title": "Send an Inquiry",
     "form_name": "Full Name",
     "form_company": "Company Name",
     "form_email": "Email Address",
+    "form_phone": "Mobile Number",
     "form_service": "Service Required",
     "form_service_placeholder": "Select a service",
     "form_service_infrastructure": "Infrastructure",
@@ -138,5 +171,13 @@
         "desc": "PLC programming, SCADA integration, and industrial control systems for manufacturing and process automation environments."
       }
     }
+  },
+  "footer": {
+    "bio": "Certified electrical, low current, and smart infrastructure contractor — delivering precision-engineered solutions across Saudi Arabia and the UAE.",
+    "badge": "Certified Contractor · KSA",
+    "col_links": "Quick Links",
+    "col_services": "Our Services",
+    "col_contact": "Contact",
+    "copyright": "BetaVolt Engineering & Contracting. All rights reserved."
   }
 }

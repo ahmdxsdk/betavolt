@@ -1,0 +1,103 @@
+[
+  {
+    "id": "sabic-primary-01",
+    "category": "infrastructure",
+    "image": "/img/sabic-primary/primary.webp",
+    "gallery": [
+      { "type": "image", "url": "/img/sabic-primary/1.webp" },
+      { "type": "image", "url": "/img/sabic-primary/2.webp" },
+      { "type": "image", "url": "/img/sabic-primary/3.webp" },
+      { "type": "image", "url": "/img/sabic-primary/4.webp" },
+      { "type": "video", "url": "/img/sabic-primary/5.webm" },
+      { "type": "image", "url": "/img/sabic-primary/6.webp" },
+      { "type": "image", "url": "/img/sabic-primary/7.webp" },
+      { "type": "image", "url": "/img/sabic-primary/8.webp" },
+      { "type": "image", "url": "/img/sabic-primary/9.webp" },
+      { "type": "image", "url": "/img/sabic-primary/10.webp" },
+      { "type": "image", "url": "/img/sabic-primary/11.webp" }
+    ],
+    "mapUrl": "https://maps.app.goo.gl/yZUnxT64cNQq2vHk8",
+    "location": {
+      "en": "Al-Mutrafih District, Jubail, KSA",
+      "ar": "حي المطرفية، جبيل، المملكة العربية السعودية"
+    },
+    "title": {
+      "en": "SABIC Primary Infrastructure Network - Al Mutrafiah",
+      "ar": "شبكة البنية التحتية الرئيسية لمشروع سابك - المطرفية"
+    },
+    "challenge": {
+      "en": "Developing and deploying a massive-scale, highly reliable power and telecommunication distribution network across a vast 365-hectare mixed-use development, ensuring seamless connectivity and uninterrupted energy supply for diverse community facilities.",
+      "ar": "تمديد وبناء شبكة معقدة لتوزيع الطاقة والاتصالات على مساحة شاسعة تبلغ 365 هكتاراً، مع التحدي المتمثل في ضمان الموثوقية العالية لتغذية المرافق السكنية والتعليمية والخدمية المختلفة دون أي تقاطع أو انقطاع في الخدمة."
+    },
+    "solution": {
+      "en": "Executed an end-to-end primary infrastructure network, successfully connecting residential villas, sports centers, schools, and public utilities. We integrated scalable power grids and high-speed telecom frameworks, built to support both current demands and future community expansions safely and efficiently.",
+      "ar": "تنفيذ شبكة بنية تحتية رئيسية متكاملة (End-to-End)، وربط الفيلات السكنية، المراكز الرياضية، المدارس، والمرافق العامة بكفاءة تامة. قمنا بدمج شبكات طاقة عالية التحمل مع بنية اتصالات فائقة السرعة، مصممة لتكون قابلة للتطوير لتلبية احتياجات التوسع المستقبلي للمجتمع بشكل آمن ومستدام."
+    }
+  },
+  {
+    "id": "sabic-secondary-02",
+    "category": "power-electrical",
+    "image": "/img/sabic-secondary/primary.webp",
+    "gallery": [
+      { "type": "image", "url": "/img/sabic-secondary/1.webp" },
+      { "type": "image", "url": "/img/sabic-secondary/2.webp" },
+      { "type": "image", "url": "/img/sabic-secondary/3.webp" },
+      { "type": "image", "url": "/img/sabic-secondary/4.webp" },
+      { "type": "image", "url": "/img/sabic-secondary/5.webp" },
+      { "type": "image", "url": "/img/sabic-secondary/6.webp" },
+      { "type": "image", "url": "/img/sabic-secondary/7.webp" },
+      { "type": "image", "url": "/img/sabic-secondary/8.webp" },
+      { "type": "image", "url": "/img/sabic-secondary/9.webp" },
+      { "type": "image", "url": "/img/sabic-secondary/10.webp" },
+      { "type": "image", "url": "/img/sabic-secondary/11.webp" },
+      { "type": "image", "url": "/img/sabic-secondary/12.webp" }
+    ],
+    "mapUrl": "https://maps.app.goo.gl/yZUnxT64cNQq2vHk8",
+    "location": {
+      "en": "Al-Mutrafih District, Jubail, KSA",
+      "ar": "حي المطرفية، جبيل، المملكة العربية السعودية"
+    },
+    "title": {
+      "en": "SABIC Secondary Housing Infrastructure",
+      "ar": "البنية التحتية لمشروع سابك للإسكان الثانوي"
+    },
+    "challenge": {
+      "en": "Powering and connecting a massive residential complex comprising 1,287 villas and 5 mosques. The core challenge was the simultaneous execution of large-scale power distribution and a highly complex passive optical network (FTTH) across a vast area, adhering to strict safety standards and tight delivery timelines.",
+      "ar": "تزويد وربط مجمع سكني ضخم يضم 1,287 فيلا و5 مساجد بالطاقة والاتصالات. تمثل التحدي الأكبر في التنفيذ المتزامن لشبكات التوزيع الكهربائية واسعة النطاق وشبكات الألياف الضوئية المعقدة (FTTH) على مساحة شاسعة، مع الالتزام الصارم بمعايير الجودة والسلامة والجدول الزمني."
+    },
+    "solution": {
+      "en": "Successfully installed and commissioned 46 Electrical Unit Substations to guarantee reliable, uninterrupted power distribution. In parallel, we deployed a complete, state-of-the-art Fiber-to-the-Home (FTTH) network—incorporating FDTs, FATs, and FTBs—ensuring high-speed, future-proof connectivity for all residents.",
+      "ar": "تركيب وتشغيل 46 محطة كهرباء فرعية (Unit Substations) لضمان توزيع طاقة موثوق ومستقر. بالتوازي مع ذلك، قمنا بتنفيذ شبكة ألياف ضوئية متطورة للمنازل (FTTH) متضمنة جميع المكونات السلبية للشبكة (FDTs, FATs, FTBs)، مما يضمن اتصالاً فائق السرعة وبنية تحتية جاهزة للمستقبل لجميع السكان."
+    }
+  },
+  {
+    "id": "marafiq-tower-03",
+    "category": "low-current",
+    "image": "/img/marafiq-tower/primary.webp",
+    "gallery": [
+      { "type": "image", "url": "/img/marafiq-tower/1.webp" },
+      { "type": "image", "url": "/img/marafiq-tower/2.webp" },
+      { "type": "image", "url": "/img/marafiq-tower/3.webp" },
+      { "type": "image", "url": "/img/marafiq-tower/4.webp" },
+      { "type": "image", "url": "/img/marafiq-tower/5.webp" },
+      { "type": "image", "url": "/img/marafiq-tower/6.webp" }
+    ],
+    "mapUrl": "https://maps.app.goo.gl/HgRUNvZJAB4Gb2PE8",
+    "location": {
+      "en": "Jubail Industrial Area 01, Jubail, KSA",
+      "ar": "المنطقة الصناعية جبيل 01، جبيل، المملكة العربية السعودية"
+    },
+    "title": {
+      "en": "Marafiq Tower Electrical & Telecom Infrastructure",
+      "ar": "البنية التحتية للكهرباء والاتصالات لبرج مرافق"
+    },
+    "challenge": {
+      "en": "Executing highly complex electrical and telecommunication infrastructure for an iconic, high-rise commercial tower in the Eastern Province. The project demanded precision engineering and strict adherence to premium quality standards to ensure continuous, flawless operation.",
+      "ar": "تنفيذ بنية تحتية معقدة للكهرباء والاتصالات لبرج تجاري أيقوني شاهق الارتفاع في المنطقة الشرقية. تطلب المشروع هندسة دقيقة جداً والتزاماً صارماً بأعلى معايير الجودة لضمان التشغيل المستمر والخالي من الأعطال."
+    },
+    "solution": {
+      "en": "Delivered a comprehensive installation of power distribution, lighting, and grounding systems. Furthermore, we deployed a robust structured cabling network ensuring seamless, high-speed data and communication connectivity, showcasing our capability to execute integrated smart solutions for premium commercial towers.",
+      "ar": "تسليم نظام متكامل لتوزيع الطاقة، الإضاءة، والتأريض. بالإضافة إلى ذلك، قمنا بتنفيذ شبكة كابلات هيكلية قوية (Structured Cabling) لضمان اتصال سلس وعالي السرعة للبيانات والاتصالات، مما يعكس قدرتنا الفائقة على تنفيذ الحلول الذكية المتكاملة للأبراج التجارية الفاخرة."
+    }
+  }
+]

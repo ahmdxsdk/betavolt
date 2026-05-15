@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { projectsData, type FilterKey, type Project, type GalleryItem } from '@/lib/projects-data';
+import { type FilterKey, type Project, type GalleryItem } from '@/lib/projects-data';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -313,7 +313,7 @@ function Modal({ project, lang, onClose, onPlayVideo, onViewImage, t }: {
 
 // ── Main Component ─────────────────────────────────────────────────────────
 
-export default function ProjectsGrid({ locale }: { locale: string }) {
+export default function ProjectsGrid({ locale, initialProjects }: { locale: string; initialProjects: Project[] }) {
   const t = useTranslations('projects_page');
   const lang = locale as Lang;
 
@@ -347,8 +347,8 @@ export default function ProjectsGrid({ locale }: { locale: string }) {
 
   const filtered =
     displayedFilter === 'all'
-      ? projectsData
-      : projectsData.filter((p) => p.category === displayedFilter);
+      ? initialProjects
+      : initialProjects.filter((p) => p.category === displayedFilter);
 
   return (
     <div>

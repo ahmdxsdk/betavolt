@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { cairo, orbitron } from '@/lib/fonts';
 import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/layout/ThemeProvider';
 import '@/app/globals.css';
 
@@ -41,6 +42,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <NextIntlClientProvider messages={messages}>
             <Navbar />
             {children}
+            <Footer />
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>

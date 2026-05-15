@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { CheckCircle, AlertCircle, Send } from 'lucide-react';
 
 type Status = 'idle' | 'sending' | 'success' | 'error';
 
 export default function ContactForm() {
   const t = useTranslations('contact_page');
+  const locale = useLocale();
+  const textDir = locale === 'ar' ? 'rtl' : 'ltr';
   const formRef = useRef<HTMLFormElement>(null);
   const [status, setStatus] = useState<Status>('idle');
 
@@ -20,6 +22,7 @@ export default function ContactForm() {
       name:    data.get('name'),
       company: data.get('company'),
       email:   data.get('email'),
+      phone:   data.get('phone'),
       service: data.get('service'),
       details: data.get('details'),
     };
@@ -95,7 +98,7 @@ export default function ContactForm() {
             autoComplete="name"
             className={inputBase}
             placeholder={t('form_name')}
-            dir="auto"
+            dir={textDir}
           />
         </div>
         <div>
@@ -108,24 +111,38 @@ export default function ContactForm() {
             autoComplete="organization"
             className={inputBase}
             placeholder={t('form_company')}
-            dir="auto"
+            dir={textDir}
           />
         </div>
       </div>
 
-      {/* Row 2: Email */}
-      <div>
-        <label htmlFor="email" className={labelBase}>{t('form_email')}</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          autoComplete="email"
-          className={inputBase}
-          placeholder="name@company.com"
-          dir="ltr"
-        />
+      {/* Row 2: Email + Phone */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="email" className={labelBase}>{t('form_email')}</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            className={inputBase}
+            placeholder="name@company.com"
+            dir="ltr"
+          />
+        </div>
+        <div>
+          <label htmlFor="phone" className={labelBase}>{t('form_phone')}</label>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            autoComplete="tel"
+            className={inputBase}
+            placeholder="+966 5X XXX XXXX"
+            dir="ltr"
+          />
+        </div>
       </div>
 
       {/* Row 3: Service */}
@@ -158,7 +175,7 @@ export default function ContactForm() {
           rows={5}
           className={inputBase + ' resize-none'}
           placeholder={t('form_details_placeholder')}
-          dir="auto"
+          dir={textDir}
         />
       </div>
 

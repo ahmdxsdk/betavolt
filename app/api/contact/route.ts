@@ -1,21 +1,34 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, company, email, service, details } = body;
+    const { name, company, email, phone, service, details } = body;
 
-    if (!name || !company || !email || !service || !details) {
+    if (!name || !email || !service || !details) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // TODO: wire up email provider (Resend, SendGrid, Nodemailer, etc.)
-    // Example: await sendEmail({ to: 'info@betavolt.com', ...body });
+    const { error } = await supabase.from('inquiries').insert([{
+      full_name: name,
+      email,
+      company:   company || null,
+      phone:     phone   || null,
+      subject:   service,
+      message:   details,
+      status:    'new',
+      source:    'contact_form',
+    }]);
 
-    console.log('[Contact] New inquiry:', { name, company, email, service });
+    if (error) {
+      console.error('[Contact API] Supabase error:', error.message);
+      return NextResponse.json({ error: 'Failed to save inquiry' }, { status: 500 });
+    }
 
-    return NextResponse.json({ success: true }, { status: 200 });
-  } catch {
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('[Contact API]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

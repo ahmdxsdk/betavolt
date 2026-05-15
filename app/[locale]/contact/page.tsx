@@ -87,9 +87,10 @@ export default async function ContactPage({ params }: Props) {
   const t = await getTranslations('contact_page');
 
   return (
-    <main className="overflow-x-hidden">
+    <main className="overflow-x-hidden bg-white dark:bg-slate-900">
 
-      <section className="relative pt-32 pb-20 sm:pt-36 sm:pb-24 lg:pt-44 lg:pb-32 bg-grid bg-slate-50 dark:bg-transparent overflow-hidden">
+      {/* ── Hero ── */}
+      <section className="relative pt-32 pb-20 sm:pt-36 sm:pb-24 lg:pt-44 lg:pb-28 bg-grid bg-slate-50 dark:bg-[#07111F] overflow-hidden">
 
         {/* Background glow */}
         <div
@@ -104,24 +105,30 @@ export default async function ContactPage({ params }: Props) {
           aria-hidden="true"
         />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold tracking-[0.2em] uppercase text-blue-600/80 dark:text-brand-blue/70 mb-4 sm:mb-5">
+            <span className="block w-8 h-px bg-brand-blue/40" aria-hidden="true" />
+            {t('eyebrow')}
+            <span className="block w-8 h-px bg-brand-blue/40" aria-hidden="true" />
+          </p>
+          <h1 className="font-black tracking-tight leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] text-slate-900 dark:text-white mb-5 sm:mb-6">
+            {t('title')}
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-base sm:text-lg lg:text-xl max-w-2xl mx-auto">
+            {t('subtitle')}
+          </p>
+        </div>
 
-          {/* ── Page header ── */}
-          <div className="text-center mb-14 sm:mb-16 lg:mb-20">
-            <p className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold tracking-[0.2em] uppercase text-blue-600/80 dark:text-brand-blue/70 mb-4 sm:mb-5">
-              <span className="block w-8 h-px bg-brand-blue/40" aria-hidden="true" />
-              {t('eyebrow')}
-              <span className="block w-8 h-px bg-brand-blue/40" aria-hidden="true" />
-            </p>
-            <h1 className="font-black tracking-tight leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] text-slate-900 dark:text-white mb-5 sm:mb-6 max-w-3xl mx-auto">
-              {t('title')}
-            </h1>
-            <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-base sm:text-lg lg:text-xl max-w-2xl mx-auto">
-              {t('subtitle')}
-            </p>
-          </div>
+        {/* Bottom fade → blends into the white section below */}
+        <div
+          className="pointer-events-none absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-white dark:from-slate-900 to-transparent"
+          aria-hidden="true"
+        />
+      </section>
 
-          {/* ── Split Layout ── */}
+      {/* ── Split Layout ── */}
+      <section className="py-16 sm:py-20 lg:py-28 bg-white dark:bg-transparent">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
 
             {/* ── Column 1: Contact Info ── */}
@@ -133,7 +140,6 @@ export default async function ContactPage({ params }: Props) {
                 <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-transparent rounded-full" />
               </div>
 
-              {/* Info rows */}
               <div className="flex flex-col gap-6">
                 <InfoRow icon={MapPinIcon} label={t('address_label')}>
                   {t('address_value')}

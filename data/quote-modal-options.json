@@ -1,0 +1,17 @@
+{
+  "projectTypes": [
+    { "en": "Smart Infrastructure", "ar": "البنية التحتية الذكية" },
+    { "en": "Data Centers", "ar": "مراكز البيانات" },
+    { "en": "Solar Energy", "ar": "الطاقة الشمسية" },
+    { "en": "Low Current Systems", "ar": "أنظمة التيار الخفيف" },
+    { "en": "Power & Electrical", "ar": "القوى والكهرباء" },
+    { "en": "Smart Building (BMS)", "ar": "المباني الذكية (BMS)" },
+    { "en": "Industrial Automation", "ar": "الأتمتة الصناعية" }
+  ],
+  "timelines": [
+    { "en": "Immediate (ASAP)", "ar": "فوري (أقرب وقت ممكن)" },
+    { "en": "1 – 3 Months", "ar": "من 1 إلى 3 أشهر" },
+    { "en": "3 – 6 Months", "ar": "من 3 إلى 6 أشهر" },
+    { "en": "6+ Months", "ar": "أكثر من 6 أشهر" }
+  ]
+}

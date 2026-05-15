@@ -3,13 +3,16 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link as LocaleLink, usePathname } from '@/navigation';
+import QuoteModal from './QuoteModal';
+import type { ModalOption } from '@/lib/load-quote-modal-options';
 
 type NavLink = { href: string; label: string; route?: boolean };
-type Props   = { links: NavLink[]; ctaLabel: string };
+type Props   = { links: NavLink[]; ctaLabel: string; projectTypes: ModalOption[]; timelines: ModalOption[] };
 
-export default function MobileMenuButton({ links, ctaLabel }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+export default function MobileMenuButton({ links, ctaLabel, projectTypes, timelines }: Props) {
+  const [isOpen, setIsOpen]           = useState(false);
+  const [quoteOpen, setQuoteOpen]     = useState(false);
+  const [mounted, setMounted]         = useState(false);
   const pathname = usePathname();
 
   useEffect(() => { setMounted(true); }, []);
@@ -25,24 +28,29 @@ export default function MobileMenuButton({ links, ctaLabel }: Props) {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  const overlay = isOpen && (
+  const overlay = (
     <div
-      className="fixed inset-0 z-[60] bg-white/98 dark:bg-slate-950/98 backdrop-blur-md overflow-y-auto transition-colors duration-300"
+      className={[
+        'fixed inset-0 z-[60] bg-white/98 dark:bg-slate-950/98 backdrop-blur-md overflow-y-auto',
+        'transition-opacity duration-300 ease-in-out',
+        isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
+      ].join(' ')}
       onClick={() => setIsOpen(false)}
     >
       {/* Close button — top-end corner */}
       <button
         onClick={() => setIsOpen(false)}
         aria-label="Close menu"
-        className="
-          absolute top-4 end-4
-          w-11 h-11 flex items-center justify-center
-          rounded-full border border-slate-200 dark:border-slate-700
-          text-slate-500 dark:text-slate-400
-          hover:text-slate-900 dark:hover:text-white
-          hover:border-slate-300 dark:hover:border-slate-600
-          transition-colors duration-150
-        "
+        className={[
+          'absolute top-4 end-4',
+          'w-11 h-11 flex items-center justify-center',
+          'rounded-full border border-slate-200 dark:border-slate-700',
+          'text-slate-500 dark:text-slate-400',
+          'hover:text-slate-900 dark:hover:text-white',
+          'hover:border-slate-300 dark:hover:border-slate-600',
+          'transition-all duration-300 ease-in-out',
+          isOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 rotate-90 scale-75',
+        ].join(' ')}
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
@@ -53,23 +61,30 @@ export default function MobileMenuButton({ links, ctaLabel }: Props) {
       </button>
 
       <div
-        className="flex flex-col items-center justify-center min-h-full gap-2 py-20 px-6"
+        className={[
+          'flex flex-col items-center justify-center min-h-full gap-2 py-20 px-6',
+          'transition-all duration-300 ease-in-out',
+          isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4',
+        ].join(' ')}
         onClick={(e) => e.stopPropagation()}
       >
-        {links.map((link) => {
+        {links.map((link, idx) => {
           const active = link.route
             ? pathname === link.href || pathname.startsWith(link.href + '/')
             : false;
-          const cls = `
-            w-full max-w-xs text-center
-            px-6 py-4 rounded-xl
-            text-xl font-semibold
-            transition-all duration-150
-            min-h-[56px] flex items-center justify-center
-            ${active
+          const cls = [
+            'w-full max-w-xs text-center',
+            'px-6 py-4 rounded-xl',
+            'text-xl font-semibold',
+            'transition-all duration-200 ease-in-out',
+            'min-h-[56px] flex items-center justify-center',
+            isOpen
+              ? `opacity-100 translate-y-0 delay-[${50 + idx * 40}ms]`
+              : 'opacity-0 translate-y-2',
+            active
               ? 'text-blue-600 dark:text-blue-400 bg-blue-600/[0.06] dark:bg-blue-500/[0.10]'
-              : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-600/[0.06] dark:hover:bg-blue-500/[0.10]'}
-          `;
+              : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-600/[0.06] dark:hover:bg-blue-500/[0.10]',
+          ].join(' ');
           return link.route ? (
             <LocaleLink
               key={link.href}
@@ -91,22 +106,26 @@ export default function MobileMenuButton({ links, ctaLabel }: Props) {
           );
         })}
 
-        <div className="w-full max-w-xs h-px bg-slate-200 dark:bg-slate-800 my-4" />
+        <div className={[
+          'w-full max-w-xs h-px bg-slate-200 dark:bg-slate-800 my-4',
+          'transition-all duration-300 ease-in-out',
+          isOpen ? 'opacity-100 delay-[220ms]' : 'opacity-0',
+        ].join(' ')} />
 
-        <LocaleLink
-          href="/contact"
-          onClick={() => setIsOpen(false)}
-          className="
-            w-full max-w-xs flex items-center justify-center gap-2
-            px-8 py-4 rounded-xl
-            bg-brand-blue text-white font-bold text-lg
-            hover:bg-brand-blue-hover
-            transition-all duration-200
-            min-h-[56px]
-          "
+        <button
+          onClick={() => { setIsOpen(false); setQuoteOpen(true); }}
+          className={[
+            'w-full max-w-xs flex items-center justify-center gap-2',
+            'px-8 py-4 rounded-xl',
+            'bg-brand-blue text-white font-bold text-lg',
+            'hover:bg-brand-blue-hover',
+            'transition-all duration-300 ease-in-out',
+            'min-h-[56px]',
+            isOpen ? 'opacity-100 translate-y-0 delay-[260ms]' : 'opacity-0 translate-y-2',
+          ].join(' ')}
         >
           {ctaLabel}
-        </LocaleLink>
+        </button>
       </div>
     </div>
   );
@@ -137,6 +156,7 @@ export default function MobileMenuButton({ links, ctaLabel }: Props) {
 
       {/* Portal — rendered at <body> level to escape the nav's stacking context */}
       {mounted && createPortal(overlay, document.body)}
+      <QuoteModal isOpen={quoteOpen} onClose={() => setQuoteOpen(false)} projectTypes={projectTypes} timelines={timelines} />
     </>
   );
 }

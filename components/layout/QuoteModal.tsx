@@ -1,0 +1,373 @@
+'use client';
+
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import { useTranslations, useLocale } from 'next-intl';
+import { CheckCircle, AlertCircle, Upload, X, Send } from 'lucide-react';
+
+import type { ModalOption } from '@/lib/load-quote-modal-options';
+
+type Status = 'idle' | 'sending' | 'success' | 'error';
+
+interface Props {
+  isOpen:       boolean;
+  onClose:      () => void;
+  projectTypes: ModalOption[];
+  timelines:    ModalOption[];
+}
+
+export default function QuoteModal({ isOpen, onClose, projectTypes, timelines }: Props) {
+  const t = useTranslations('quote_modal');
+  const locale = useLocale();
+  const textDir = locale === 'ar' ? 'rtl' : 'ltr';
+
+  const [mounted, setMounted]     = useState(false);
+  const [visible, setVisible]     = useState(false);
+  const [status, setStatus]       = useState<Status>('idle');
+  const [fileName, setFileName]   = useState<string | null>(null);
+  const [dragging, setDragging]   = useState(false);
+  const formRef  = useRef<HTMLFormElement>(null);
+  const firstRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  // Animate in/out
+  useEffect(() => {
+    if (isOpen) {
+      setVisible(false);
+      const raf = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(raf);
+    } else {
+      setVisible(false);
+    }
+  }, [isOpen]);
+
+  // Close on ESC
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
+  // Lock body scroll
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
+  // Focus first field on open
+  useEffect(() => {
+    if (isOpen) setTimeout(() => firstRef.current?.focus(), 120);
+  }, [isOpen]);
+
+  const handleClose = useCallback(() => {
+    setVisible(false);
+    setTimeout(onClose, 200);
+  }, [onClose]);
+
+  function handleFile(file: File | undefined) {
+    if (!file) return;
+    setFileName(file.name);
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setStatus('sending');
+    const data = new FormData(e.currentTarget);
+    try {
+      const res = await fetch('/api/quote', {
+        method: 'POST',
+        body: data,
+      });
+      if (!res.ok) throw new Error();
+      setStatus('success');
+      formRef.current?.reset();
+      setFileName(null);
+    } catch {
+      setStatus('error');
+    }
+  }
+
+  const inputCls =
+    'w-full px-4 py-3 rounded-xl text-sm text-slate-900 dark:text-white ' +
+    'bg-slate-50 dark:bg-slate-900/60 ' +
+    'border border-slate-200 dark:border-slate-700 ' +
+    'placeholder:text-slate-400 dark:placeholder:text-slate-500 ' +
+    'focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent ' +
+    'transition-all duration-200';
+
+  const labelCls = 'block text-xs font-bold tracking-wide uppercase text-slate-500 dark:text-slate-400 mb-1.5';
+
+  if (!mounted) return null;
+
+  const modal = (
+    <div
+      className={[
+        'fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6',
+        'transition-opacity duration-200',
+        isOpen ? 'pointer-events-auto' : 'pointer-events-none',
+        visible ? 'opacity-100' : 'opacity-0',
+      ].join(' ')}
+      aria-modal="true"
+      role="dialog"
+      aria-labelledby="quote-modal-title"
+    >
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+        onClick={handleClose}
+        aria-hidden="true"
+      />
+
+      {/* Card */}
+      <div
+        className={[
+          'relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto',
+          'rounded-3xl border border-slate-200 dark:border-slate-800',
+          'bg-white dark:bg-[#07111F]',
+          'shadow-[0_32px_80px_rgba(0,0,0,0.2)] dark:shadow-[0_32px_80px_rgba(0,0,0,0.7)]',
+          'transition-all duration-200',
+          visible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4',
+        ].join(' ')}
+      >
+        {/* ── Header ── */}
+        <div className="relative flex items-start justify-between gap-4 p-6 sm:p-8 pb-0">
+          <div className="flex-1 min-w-0">
+            {/* Eyebrow line */}
+            <p className="inline-flex items-center gap-2 text-[10px] font-black tracking-[0.2em] uppercase text-blue-600 dark:text-blue-400 mb-3">
+              <span className="block w-5 h-px bg-blue-500/50" aria-hidden="true" />
+              BetaVolt Engineering
+            </p>
+            <h2
+              id="quote-modal-title"
+              className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-snug"
+            >
+              {t('title')}
+            </h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mt-1.5">
+              {t('subtitle')}
+            </p>
+          </div>
+
+          {/* Close button */}
+          <button
+            onClick={handleClose}
+            aria-label="Close"
+            className="
+              shrink-0 w-9 h-9 flex items-center justify-center
+              rounded-xl border border-slate-200 dark:border-slate-700
+              text-slate-500 dark:text-slate-400
+              hover:text-slate-900 dark:hover:text-white
+              hover:border-slate-300 dark:hover:border-slate-600
+              hover:bg-slate-50 dark:hover:bg-slate-800
+              transition-all duration-150
+            "
+          >
+            <X size={16} strokeWidth={2.5} />
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div className="mx-6 sm:mx-8 mt-6 h-px bg-slate-100 dark:bg-slate-800" />
+
+        {/* ── Body ── */}
+        <div className="p-6 sm:p-8 pt-6">
+
+          {/* Success state */}
+          {status === 'success' ? (
+            <div className="flex flex-col items-center justify-center gap-5 py-10 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-800 flex items-center justify-center text-green-600 dark:text-green-400">
+                <CheckCircle size={32} strokeWidth={1.75} />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">
+                  {t('success_title')}
+                </h3>
+                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed max-w-sm mx-auto">
+                  {t('success_body')}
+                </p>
+              </div>
+              <button
+                onClick={handleClose}
+                className="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-colors duration-200"
+              >
+                {t('success_close')}
+              </button>
+            </div>
+          ) : (
+            <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+
+              {/* Error banner */}
+              {status === 'error' && (
+                <div className="flex items-start gap-3 p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm">
+                  <AlertCircle size={16} className="shrink-0 mt-0.5" />
+                  {t('error')}
+                </div>
+              )}
+
+              {/* Row 1: Name + Company */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="qm-name" className={labelCls}>{t('field_name')}</label>
+                  <input
+                    ref={firstRef}
+                    id="qm-name"
+                    name="name"
+                    type="text"
+                    required
+                    autoComplete="name"
+                    className={inputCls}
+                    placeholder={t('field_name')}
+                    dir={textDir}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="qm-company" className={labelCls}>{t('field_company')}</label>
+                  <input
+                    id="qm-company"
+                    name="company"
+                    type="text"
+                    required
+                    autoComplete="organization"
+                    className={inputCls}
+                    placeholder={t('field_company')}
+                    dir={textDir}
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Project Type + Timeline */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="qm-project" className={labelCls}>{t('field_project_type')}</label>
+                  <select
+                    id="qm-project"
+                    name="project_type"
+                    required
+                    defaultValue=""
+                    className={inputCls + ' cursor-pointer'}
+                  >
+                    <option value="" disabled>{t('field_project_placeholder')}</option>
+                    {projectTypes.map((opt, i) => (
+                      <option key={i} value={`type-${i}`}>
+                        {locale === 'ar' ? opt.ar : opt.en}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="qm-timeline" className={labelCls}>{t('field_timeline')}</label>
+                  <select
+                    id="qm-timeline"
+                    name="timeline"
+                    required
+                    defaultValue=""
+                    className={inputCls + ' cursor-pointer'}
+                  >
+                    <option value="" disabled>{t('field_timeline_placeholder')}</option>
+                    {timelines.map((opt, i) => (
+                      <option key={i} value={`timeline-${i}`}>
+                        {locale === 'ar' ? opt.ar : opt.en}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Row 3: File Upload */}
+              <div>
+                <label className={labelCls}>{t('field_upload')}</label>
+                <label
+                  htmlFor="qm-file"
+                  onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                  onDragLeave={() => setDragging(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setDragging(false);
+                    handleFile(e.dataTransfer.files[0]);
+                  }}
+                  className={[
+                    'flex flex-col items-center justify-center gap-2 w-full px-6 py-8 rounded-xl cursor-pointer',
+                    'border-2 border-dashed transition-all duration-200',
+                    dragging
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
+                      : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 hover:border-blue-400 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/10',
+                  ].join(' ')}
+                >
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                    <Upload size={18} strokeWidth={1.75} />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                      {fileName ?? t('field_upload_cta')}
+                    </p>
+                    {!fileName && (
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                        {t('field_upload_hint')}
+                      </p>
+                    )}
+                  </div>
+                  <input
+                    id="qm-file"
+                    name="file"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    className="sr-only"
+                    onChange={(e) => handleFile(e.target.files?.[0])}
+                  />
+                </label>
+              </div>
+
+              {/* Row 4: Requirements */}
+              <div>
+                <label htmlFor="qm-requirements" className={labelCls}>{t('field_requirements')}</label>
+                <textarea
+                  id="qm-requirements"
+                  name="requirements"
+                  required
+                  rows={4}
+                  className={inputCls + ' resize-none'}
+                  placeholder={t('field_requirements_placeholder')}
+                  dir={textDir}
+                />
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={status === 'sending'}
+                className="
+                  w-full flex items-center justify-center gap-2
+                  px-6 py-4 min-h-[54px] rounded-xl
+                  bg-blue-600 hover:bg-blue-700 disabled:opacity-60
+                  text-white font-bold text-sm
+                  shadow-sm hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]
+                  transition-all duration-200
+                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
+                "
+              >
+                {status === 'sending' ? (
+                  <>
+                    <svg className="animate-spin w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" strokeLinecap="round"/>
+                    </svg>
+                    {t('submitting')}
+                  </>
+                ) : (
+                  <>
+                    <Send size={15} strokeWidth={2.5} />
+                    {t('submit')}
+                  </>
+                )}
+              </button>
+
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  return createPortal(modal, document.body);
+}

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { Link } from '@/navigation';
 import { servicesData } from '@/lib/services-data';
+import QuoteModalButton from '@/components/layout/QuoteModalButton';
+import { loadQuoteModalOptions } from '@/lib/load-quote-modal-options';
 
 export const metadata: Metadata = {
   title: 'Services – BetaVolt Engineering & Contracting',
@@ -15,7 +16,8 @@ type Props = {
 
 export default async function ServicesPage({ params }: Props) {
   const { locale } = await params;
-  const t = await getTranslations('services_page');
+  const t       = await getTranslations('services_page');
+  const options = loadQuoteModalOptions();
   const lang = locale as 'en' | 'ar';
 
   return (
@@ -190,8 +192,10 @@ export default async function ServicesPage({ params }: Props) {
           <p className="text-slate-700 dark:text-slate-300 text-base sm:text-lg leading-relaxed mb-8 sm:mb-10">
             {t('cta_subtitle')}
           </p>
-          <Link
-            href="/#contact"
+          <QuoteModalButton
+            ctaLabel={t('cta_button')}
+            projectTypes={options.projectTypes}
+            timelines={options.timelines}
             className="
               inline-flex items-center gap-2
               px-8 py-4
@@ -201,18 +205,7 @@ export default async function ServicesPage({ params }: Props) {
               glow-blue-sm hover:bg-brand-blue-hover
               transition-all duration-200 hover:scale-105 active:scale-100
             "
-          >
-            {t('cta_button')}
-            <svg
-              width="16" height="16" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor"
-              strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-              className="rtl:rotate-180 shrink-0"
-              aria-hidden="true"
-            >
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </Link>
+          />
         </div>
       </section>
 

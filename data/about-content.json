@@ -1,0 +1,83 @@
+{
+  "dna": [
+    {
+      "gold": false,
+      "title": { "en": "Vision", "ar": "الرؤية" },
+      "body": {
+        "en": "To be the leading smart infrastructure contractor in MENA — powering and connecting the facilities of tomorrow with precision-engineered solutions.",
+        "ar": "أن نكون المقاول الرائد في البنية التحتية الذكية بمنطقة الشرق الأوسط وشمال أفريقيا — نُشغّل منشآت الغد ونربطها بحلول مُهندَسة بدقة."
+      }
+    },
+    {
+      "gold": true,
+      "title": { "en": "Mission", "ar": "المهمة" },
+      "body": {
+        "en": "Deliver certified, precision-engineered electrical, low current, and smart systems — on time, within budget, with zero compromise on quality.",
+        "ar": "تقديم أنظمة كهربائية وتيار خفيف وذكية معتمدة ومُهندَسة بدقة — في الوقت المحدد، ضمن الميزانية، دون أي تنازل عن الجودة."
+      }
+    },
+    {
+      "gold": false,
+      "title": { "en": "Values", "ar": "القيم" },
+      "body": {
+        "en": "Precision. Integrity. Innovation. We treat every conduit run and control panel as a direct reflection of our engineering identity.",
+        "ar": "الدقة. النزاهة. الابتكار. نتعامل مع كل مسار كابل ولوحة تحكم باعتبارها انعكاساً مباشراً لهويتنا الهندسية."
+      }
+    }
+  ],
+  "stats": [
+    {
+      "value": { "en": "+50,000 m", "ar": "+50,000 م" },
+      "label": { "en": "Fiber Optic Cables Laid", "ar": "كوابل ألياف بصرية مُدَّت" }
+    },
+    {
+      "value": { "en": "+10 MW", "ar": "+10 ميغاواط" },
+      "label": { "en": "Solar Power Installed", "ar": "طاقة شمسية مُركَّبة" }
+    },
+    {
+      "value": { "en": "+5,000", "ar": "+5,000" },
+      "label": { "en": "Smart Nodes Configured", "ar": "عقدة ذكية مُهيَّأة" }
+    },
+    {
+      "value": { "en": "Zero", "ar": "صفر" },
+      "label": { "en": "Downtime Delivered", "ar": "توقف غير مجدول" }
+    }
+  ],
+  "why": [
+    {
+      "icon": "badge",
+      "gold": false,
+      "title": { "en": "Certified Engineers", "ar": "مهندسون معتمدون" },
+      "body": {
+        "en": "Our team holds international certifications across electrical systems, fiber networks, CCTV, fire safety, and intelligent building controls.",
+        "ar": "يحمل فريقنا شهادات دولية في الأنظمة الكهربائية والألياف البصرية والمراقبة وإنذار الحريق وأنظمة التحكم الذكي في المباني."
+      }
+    },
+    {
+      "icon": "clock",
+      "gold": true,
+      "title": { "en": "On-Time Delivery", "ar": "التسليم في الموعد" },
+      "body": {
+        "en": "A 100% on-time project delivery track record backed by rigorous scheduling, milestone tracking, and proactive risk management.",
+        "ar": "سجل حافل بتسليم المشاريع في موعدها، مدعوماً بجدولة صارمة وتتبع دقيق للمراحل وإدارة استباقية للمخاطر."
+      }
+    },
+    {
+      "icon": "headset",
+      "gold": false,
+      "title": { "en": "24/7 Tech Support", "ar": "دعم فني على مدار الساعة" },
+      "body": {
+        "en": "Round-the-clock technical support and preventive maintenance contracts — ensuring your critical infrastructure never misses a beat.",
+        "ar": "دعم فني وعقود صيانة وقائية على مدار الساعة — لضمان أن بنيتك التحتية الحيوية لا تتوقف أبداً."
+      }
+    }
+  ],
+  "map": {
+    "embedUrl": "https://maps.google.com/maps?q=26.2172,50.1971&z=14&output=embed&hl=ar",
+    "mapsUrl": "https://maps.app.goo.gl/yZUnxT64cNQq2vHk8",
+    "label": {
+      "en": "HQ — Al Khobar, Eastern Province",
+      "ar": "المقر الرئيسي — الخبر، المنطقة الشرقية"
+    }
+  }
+}

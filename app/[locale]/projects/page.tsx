@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { createClient } from '@supabase/supabase-js';
 import ProjectsGrid from '@/components/sections/ProjectsGrid';
+import type { Project, ProjectCategory } from '@/lib/projects-data';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Projects – BetaVolt Engineering & Contracting',
@@ -10,9 +14,42 @@ export const metadata: Metadata = {
 
 type Props = { params: Promise<{ locale: string }> };
 
+async function fetchProjects(): Promise<Project[]> {
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    );
+
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('sort_order', { ascending: true });
+
+    if (error || !data) return [];
+
+    return data.map(row => ({
+      id:       row.id,
+      category: row.category as ProjectCategory,
+      image:    row.image_url,
+      gallery:  row.gallery ?? [],
+      location: { en: row.location_en, ar: row.location_ar },
+      mapUrl:   row.map_url || undefined,
+      title:    { en: row.title_en,    ar: row.title_ar    },
+      challenge:{ en: row.challenge_en,ar: row.challenge_ar },
+      solution: { en: row.solution_en, ar: row.solution_ar  },
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export default async function ProjectsPage({ params }: Props) {
   const { locale } = await params;
-  const t = await getTranslations('projects_page');
+  const [t, projects] = await Promise.all([
+    getTranslations('projects_page'),
+    fetchProjects(),
+  ]);
 
   return (
     <main className="overflow-x-hidden">
@@ -20,14 +57,11 @@ export default async function ProjectsPage({ params }: Props) {
       {/* ── Hero ── */}
       <section className="relative pt-32 pb-16 sm:pt-36 sm:pb-20 lg:pt-44 lg:pb-28 bg-grid bg-slate-50 dark:bg-transparent overflow-hidden">
 
-        {/* Background glow */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{ background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(75,163,227,0.13) 0%, transparent 70%)' }}
           aria-hidden="true"
         />
-
-        {/* Top border glow */}
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-px"
           style={{ background: 'linear-gradient(to right, transparent, rgba(75,163,227,0.25), transparent)' }}
@@ -52,7 +86,7 @@ export default async function ProjectsPage({ params }: Props) {
       {/* ── Grid + Filter ── */}
       <section className="py-16 sm:py-20 lg:py-28 bg-white dark:bg-slate-950 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ProjectsGrid locale={locale} />
+          <ProjectsGrid locale={locale} initialProjects={projects} />
         </div>
       </section>
 

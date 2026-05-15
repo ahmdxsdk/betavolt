@@ -5,9 +5,12 @@ import LanguageSwitcher from './LanguageSwitcher';
 import MobileMenuButton from './MobileMenuButton';
 import NavLinks from './NavLinks';
 import ThemeToggle from './ThemeToggle';
+import QuoteModalButton from './QuoteModalButton';
+import { loadQuoteModalOptions } from '@/lib/load-quote-modal-options';
 
 export default async function Navbar() {
-  const t = await getTranslations('nav');
+  const t       = await getTranslations('nav');
+  const options = loadQuoteModalOptions();
 
   const links = [
     { href: '/services',  label: t('services'), route: true  },
@@ -17,7 +20,7 @@ export default async function Navbar() {
   ];
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 px-3 sm:px-4 lg:px-6">
+    <header className="fixed top-0 inset-x-0 z-50 px-3 sm:px-4 lg:px-6 animate-[navbar-in_0.4s_ease_forwards]">
       <nav
         className="
           max-w-7xl mx-auto mt-3
@@ -62,21 +65,9 @@ export default async function Navbar() {
           <LanguageSwitcher />
 
           {/* CTA — only on desktop to avoid crowding at 640–767 px */}
-          <Link
-            href="/contact"
-            className="
-              hidden md:inline-flex items-center gap-1.5
-              px-4 py-2.5 rounded-lg
-              bg-brand-blue text-white font-bold text-sm
-              hover:bg-brand-blue-hover shadow-sm
-              transition-all duration-200 hover:scale-105 active:scale-100
-              min-h-[44px]
-            "
-          >
-            {t('cta')}
-          </Link>
+          <QuoteModalButton ctaLabel={t('cta')} projectTypes={options.projectTypes} timelines={options.timelines} />
 
-          <MobileMenuButton links={links} ctaLabel={t('cta')} />
+          <MobileMenuButton links={links} ctaLabel={t('cta')} projectTypes={options.projectTypes} timelines={options.timelines} />
         </div>
 
       </nav>
