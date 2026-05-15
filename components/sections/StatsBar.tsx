@@ -7,8 +7,12 @@ import { useTranslations } from 'next-intl';
 const STAT_ICONS: LucideIcon[] = [Zap, Server, Clock, CheckCircle];
 
 function parseValue(raw: string): { target: number; suffix: string } {
-  const m = raw.match(/^(\d+)(.*)/);
-  return m ? { target: parseInt(m[1], 10), suffix: m[2] } : { target: 0, suffix: raw };
+  const m = raw.match(/^([+\-]?)(\d+)(.*)$/);
+  if (!m) return { target: 0, suffix: raw };
+  const prefix = m[1];
+  const num    = parseInt(m[2], 10);
+  const rest   = m[3];
+  return { target: num, suffix: prefix || rest };
 }
 
 const DURATION = 2000;
