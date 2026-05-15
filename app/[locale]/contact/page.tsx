@@ -1,6 +1,22 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import ContactForm from '@/components/sections/ContactForm';
+import { getContent } from '@/lib/content-store';
+
+interface ContactDetails {
+  email_general: string;
+  email_projects: string;
+  phone: string;
+  whatsapp: string;
+}
+
+async function loadContactDetails(): Promise<ContactDetails> {
+  try {
+    const db = await getContent('contact-details');
+    if (db) return db as unknown as ContactDetails;
+  } catch { /* fall through */ }
+  return { email_general: '', email_projects: '', phone: '', whatsapp: '' };
+}
 
 export const metadata: Metadata = {
   title: 'Contact Us – BetaVolt Engineering & Contracting',
@@ -83,8 +99,11 @@ function InfoRow({
 // ── Page ──────────────────────────────────────────────────────────────────
 
 export default async function ContactPage({ params }: Props) {
-  const { locale } = await params;
-  const t = await getTranslations('contact_page');
+  await params;
+  const [t, details] = await Promise.all([
+    getTranslations('contact_page'),
+    loadContactDetails(),
+  ]);
 
   return (
     <main className="overflow-x-hidden bg-white dark:bg-slate-900">
@@ -145,35 +164,41 @@ export default async function ContactPage({ params }: Props) {
                   {t('address_value')}
                 </InfoRow>
 
-                <InfoRow icon={MailIcon} label={t('email_general_label')}>
-                  <a
-                    href="mailto:info@betavolt.com"
-                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                    dir="ltr"
-                  >
-                    info@betavolt.com
-                  </a>
-                </InfoRow>
+                {details.email_general && (
+                  <InfoRow icon={MailIcon} label={t('email_general_label')}>
+                    <a
+                      href={`mailto:${details.email_general}`}
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                      dir="ltr"
+                    >
+                      {details.email_general}
+                    </a>
+                  </InfoRow>
+                )}
 
-                <InfoRow icon={MailIcon} label={t('email_projects_label')}>
-                  <a
-                    href="mailto:engineering@betavolt.com"
-                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                    dir="ltr"
-                  >
-                    engineering@betavolt.com
-                  </a>
-                </InfoRow>
+                {details.email_projects && (
+                  <InfoRow icon={MailIcon} label={t('email_projects_label')}>
+                    <a
+                      href={`mailto:${details.email_projects}`}
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                      dir="ltr"
+                    >
+                      {details.email_projects}
+                    </a>
+                  </InfoRow>
+                )}
 
-                <InfoRow icon={PhoneIcon} label={t('phone_label')}>
-                  <a
-                    href="tel:+966XXXXXXXXX"
-                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    dir="ltr"
-                  >
-                    {t('phone_value')}
-                  </a>
-                </InfoRow>
+                {details.phone && (
+                  <InfoRow icon={PhoneIcon} label={t('phone_label')}>
+                    <a
+                      href={`tel:${details.phone.replace(/\s/g, '')}`}
+                      className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      dir="ltr"
+                    >
+                      {details.phone}
+                    </a>
+                  </InfoRow>
+                )}
 
                 <InfoRow icon={ClockIcon} label={t('hours_label')}>
                   {t('hours_value')}
