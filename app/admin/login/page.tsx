@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Mail, Lock, Shield, RefreshCw, AlertCircle } from 'lucide-react';
+import { Mail, Lock, Shield, RefreshCw, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { loginAction } from './actions';
 import ThemeToggle from '@/components/layout/ThemeToggle';
 
@@ -39,10 +39,13 @@ const L = {
 
 /* ─── Style constants ────────────────────────────────────── */
 const INPUT =
-  'w-full ps-10 pe-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 ' +
+  'w-full ps-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 ' +
   'bg-slate-50 dark:bg-slate-800/70 text-slate-900 dark:text-white ' +
   'placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm ' +
   'focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-500 transition-colors';
+
+const INPUT_PLAIN = INPUT + ' pe-4';
+const INPUT_PASS  = INPUT + ' pe-10';
 
 const LABEL =
   'block text-[11px] font-bold tracking-[0.12em] uppercase text-slate-500 dark:text-slate-400 mb-1.5 text-start';
@@ -51,6 +54,7 @@ const LABEL =
 export default function AdminLoginPage() {
   const [state, formAction, pending] = useActionState<ActionState, FormData>(loginAction, null);
   const [lang, setLangState] = useState<Lang>('en');
+  const [showPass, setShowPass] = useState(false);
 
   /* Read saved lang from cookie on mount */
   useEffect(() => {
@@ -178,7 +182,7 @@ export default function AdminLoginPage() {
                   required
                   autoComplete="email"
                   placeholder={t.emailPh}
-                  className={INPUT}
+                  className={INPUT_PLAIN}
                   dir="ltr"
                 />
               </div>
@@ -194,14 +198,25 @@ export default function AdminLoginPage() {
                   className="absolute top-1/2 -translate-y-1/2 start-3.5 text-slate-400 pointer-events-none" />
                 <input
                   id="login-password"
-                  type="password"
+                  type={showPass ? 'text' : 'password'}
                   name="password"
                   required
                   autoComplete="current-password"
                   placeholder={t.passPh}
-                  className={INPUT}
+                  className={INPUT_PASS}
                   dir="ltr"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPass(v => !v)}
+                  className="absolute top-1/2 -translate-y-1/2 end-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                  tabIndex={-1}
+                  aria-label={showPass ? 'Hide password' : 'Show password'}
+                >
+                  {showPass
+                    ? <EyeOff size={15} strokeWidth={1.75} />
+                    : <Eye    size={15} strokeWidth={1.75} />}
+                </button>
               </div>
             </div>
 

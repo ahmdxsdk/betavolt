@@ -2,59 +2,121 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
+import type { Role } from './lib/admin-roles';
 
 const handleI18n = createIntlMiddleware(routing);
 
+/* ─── Route permission rules ───────────────────────────────
+   Prefixes use the /admin/... form.
+   API routes strip the leading /api before matching.
+   Order matters: most specific first.                       */
+const ROUTE_RULES: Array<{ prefix: string; allow: Role[] }> = [
+  { prefix: '/admin/users',     allow: ['super_admin'] },
+  { prefix: '/admin/content',   allow: ['super_admin', 'content_manager'] },
+  { prefix: '/admin/inquiries', allow: ['super_admin', 'sales'] },
+];
+
+/** Returns true when `role` is allowed to access `pathname`. */
+function isAllowed(pathname: string, role: Role): boolean {
+  // Normalize API paths → /admin/... so rules apply uniformly
+  const normalized = pathname.startsWith('/api/admin')
+    ? pathname.slice('/api'.length)
+    : pathname;
+
+  for (const rule of ROUTE_RULES) {
+    if (normalized.startsWith(rule.prefix)) {
+      return (rule.allow as string[]).includes(role);
+    }
+  }
+  return true; // no matching rule → open to all authenticated users
+}
+
+/* ─── Middleware ─────────────────────────────────────────── */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  /* ── Admin section ──────────────────────────────────────────── */
-  if (pathname.startsWith('/admin')) {
-
-    // Inject the current pathname as a request header so that the
-    // AdminLayout (server component) can detect the login page and
-    // omit the sidebar/header shell without touching the URL.
-    const forwardHeaders = new Headers(request.headers);
-    forwardHeaders.set('x-pathname', pathname);
-
-    // ── /admin/login: pass through but redirect if already authed
-    if (pathname === '/admin/login') {
-      const res = NextResponse.next({ request: { headers: forwardHeaders } });
-
-      const supabase = buildMiddlewareClient(request, res);
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (user) {
-        // Already logged in → go straight to dashboard
-        const url = request.nextUrl.clone();
-        url.pathname = '/admin';
-        return NextResponse.redirect(url);
-      }
-
-      return res;
-    }
-
-    // ── All other /admin/* routes: require a valid session
-    let res = NextResponse.next({ request: { headers: forwardHeaders } });
-    const supabase = buildMiddlewareClient(request, res);
+  /* ══ 1. Admin API routes — /api/admin/* ════════════════════
+     These are completely separate from the page routes.
+     Unauthenticated → 401 JSON.
+     Wrong role      → 403 JSON.                              */
+  if (pathname.startsWith('/api/admin')) {
+    const res     = NextResponse.next();
+    const supabase = buildClient(request, res);
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/admin/login';
-      return NextResponse.redirect(url);
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const role = resolveRole(user);
+
+    if (!isAllowed(pathname, role)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     return res;
   }
 
-  /* ── Public routes → next-intl locale routing ───────────────── */
+  /* ══ 2. Admin UI routes — /admin/* ═════════════════════════ */
+  if (pathname.startsWith('/admin')) {
+    const forwardHeaders = new Headers(request.headers);
+    forwardHeaders.set('x-pathname', pathname);
+
+    /* /admin/login — pass through, redirect if already authed */
+    if (pathname === '/admin/login') {
+      const res     = NextResponse.next({ request: { headers: forwardHeaders } });
+      const supabase = buildClient(request, res);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) return redirect(request, '/admin');
+      return res;
+    }
+
+    /* All other /admin/* pages — require valid session */
+    const res     = NextResponse.next({ request: { headers: forwardHeaders } });
+    const supabase = buildClient(request, res);
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return redirect(request, '/admin/login');
+
+    const role = resolveRole(user);
+
+    /* Role guard — redirect unauthorized users to the dashboard */
+    if (!isAllowed(pathname, role)) {
+      return redirect(request, '/admin');
+    }
+
+    /* Stamp the resolved role into a readable cookie so the
+       client-side sidebar can read it synchronously without
+       any additional network round-trip.                     */
+    res.cookies.set('x-admin-role', role, {
+      httpOnly: false,
+      sameSite: 'strict',
+      path:     '/admin',
+      maxAge:   60 * 60 * 8, // 8 h — matches typical session lifetime
+    });
+
+    return res;
+  }
+
+  /* ══ 3. Public routes → next-intl locale routing ═══════════ */
   return handleI18n(request);
 }
 
-/* Helper: create a Supabase client that reads from the request cookies
-   and writes refreshed tokens back into the response cookies.         */
-function buildMiddlewareClient(request: NextRequest, response: NextResponse) {
+/* ─── Helpers ────────────────────────────────────────────── */
+
+/** Read role from user_metadata. Falls back to 'super_admin' for
+ *  accounts created before RBAC was introduced.                  */
+function resolveRole(user: { user_metadata?: Record<string, unknown> }): Role {
+  return ((user.user_metadata?.role as Role | undefined) ?? 'super_admin');
+}
+
+function redirect(request: NextRequest, to: string) {
+  const url = request.nextUrl.clone();
+  url.pathname = to;
+  return NextResponse.redirect(url);
+}
+
+function buildClient(request: NextRequest, response: NextResponse) {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -71,7 +133,12 @@ function buildMiddlewareClient(request: NextRequest, response: NextResponse) {
   );
 }
 
+/* ─── Matcher ────────────────────────────────────────────────
+   Explicitly include /api/admin/* so API routes are guarded.
+   Keep the public-route pattern unchanged.                    */
 export const config = {
-  // Match every route except: API routes, Next.js internals, static files
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+  matcher: [
+    '/api/admin/:path*',
+    "/((?!api|_next|_vercel|.*\\..*).*)",
+  ],
 };

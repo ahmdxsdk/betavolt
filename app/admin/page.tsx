@@ -7,6 +7,7 @@ import {
   LayoutDashboard, ArrowUpRight, CheckCheck, Clock, RefreshCw,
 } from 'lucide-react';
 import { useAdminLang } from '@/components/admin/AdminLangProvider';
+import { useAdminRole } from '@/components/admin/AdminRoleProvider';
 
 /* ─── Types ──────────────────────────────────────────────── */
 type Status = 'new' | 'read' | 'replied';
@@ -176,8 +177,12 @@ function QuickAction({ href, icon: Icon, label, sub }: {
 /* ─── Page ───────────────────────────────────────────────── */
 export default function AdminOverviewPage() {
   const { lang } = useAdminLang();
+  const role = useAdminRole();
   const t   = L[lang];
   const dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+  const canContent   = role === 'super_admin' || role === 'content_manager';
+  const canInquiries = role === 'super_admin' || role === 'sales';
 
   const [data,    setData]    = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -247,19 +252,21 @@ export default function AdminOverviewPage() {
 
       {/* ── Quick actions ─────────────────────────────────────
            Mobile → 1 col · sm → 3 cols                       */}
-      <section>
-        <h3 className="text-[11px] font-black tracking-[0.15em] uppercase text-slate-400 dark:text-slate-500 mb-3 sm:mb-4">
-          {t.quickTitle}
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-          <QuickAction href="/admin/content/projects" icon={FolderPlus}     label={t.qa1Label} sub={t.qa1Sub} />
-          <QuickAction href="/admin/inquiries"        icon={Inbox}           label={t.qa2Label} sub={t.qa2Sub} />
-          <QuickAction href="/admin/content/home"     icon={LayoutDashboard} label={t.qa3Label} sub={t.qa3Sub} />
-        </div>
-      </section>
+      {(canContent || canInquiries) && (
+        <section>
+          <h3 className="text-[11px] font-black tracking-[0.15em] uppercase text-slate-400 dark:text-slate-500 mb-3 sm:mb-4">
+            {t.quickTitle}
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            {canContent   && <QuickAction href="/admin/content/projects" icon={FolderPlus}     label={t.qa1Label} sub={t.qa1Sub} />}
+            {canInquiries && <QuickAction href="/admin/inquiries"        icon={Inbox}           label={t.qa2Label} sub={t.qa2Sub} />}
+            {canContent   && <QuickAction href="/admin/content/home"     icon={LayoutDashboard} label={t.qa3Label} sub={t.qa3Sub} />}
+          </div>
+        </section>
+      )}
 
       {/* ── Recent inquiries ──────────────────────────────────── */}
-      <section>
+      {canInquiries && <section>
         <div className="flex items-center justify-between gap-3 mb-3 sm:mb-4">
           <h3 className="text-[11px] font-black tracking-[0.15em] uppercase text-slate-400 dark:text-slate-500">
             {t.recentTitle}
@@ -371,7 +378,7 @@ export default function AdminOverviewPage() {
             </div>
           )}
         </div>
-      </section>
+      </section>}
 
     </div>
   );

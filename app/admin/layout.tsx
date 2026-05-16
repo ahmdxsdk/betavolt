@@ -8,6 +8,9 @@ import AdminLangProvider, { type AdminLang } from '@/components/admin/AdminLangP
 import AdminRefreshProvider, { AdminMainContent } from '@/components/admin/AdminRefreshProvider';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminHeader from '@/components/admin/AdminHeader';
+import { AdminRoleProvider } from '@/components/admin/AdminRoleProvider';
+import { createSupabaseServerClient } from '@/lib/supabase-server';
+import type { Role } from '@/lib/admin-roles';
 import '@/app/globals.css';
 
 export const metadata: Metadata = {
@@ -16,16 +19,27 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
-  const cookieStore  = await cookies();
-  const headersList  = await headers();
+  const cookieStore = await cookies();
+  const headersList = await headers();
 
-  const savedLang    = cookieStore.get('admin-lang')?.value;
+  const savedLang   = cookieStore.get('admin-lang')?.value;
   const initialLang: AdminLang = savedLang === 'ar' ? 'ar' : 'en';
 
-  // Set by middleware on every /admin request so we can detect the login page
-  // without a client-side check.
-  const pathname     = headersList.get('x-pathname') ?? '';
-  const isLoginPage  = pathname === '/admin/login';
+  const pathname    = headersList.get('x-pathname') ?? '';
+  const isLoginPage = pathname === '/admin/login';
+
+  // Read the current user's role server-side so it is available on the
+  // first render — no client-side async, no hydration mismatch.
+  let role: Role = 'super_admin';
+  if (!isLoginPage) {
+    try {
+      const supabase = await createSupabaseServerClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      role = ((user?.user_metadata?.role as Role | undefined) ?? 'super_admin');
+    } catch {
+      // fall back to super_admin if session cannot be read
+    }
+  }
 
   return (
     <html lang="en" suppressHydrationWarning className={`${cairo.variable} ${orbitron.variable}`}>
@@ -33,20 +47,20 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 
           {isLoginPage ? (
-            /* ── Login page: full-screen, no sidebar/header ── */
             <>{children}</>
           ) : (
-            /* ── Dashboard shell ─────────────────────────────── */
             <AdminLangProvider initialLang={initialLang}>
-              <AdminRefreshProvider>
-                <SidebarProvider>
-                  <AdminSidebar />
-                  <div className="lg:ps-64 flex flex-col min-h-screen">
-                    <AdminHeader />
-                    <AdminMainContent>{children}</AdminMainContent>
-                  </div>
-                </SidebarProvider>
-              </AdminRefreshProvider>
+              <AdminRoleProvider role={role}>
+                <AdminRefreshProvider>
+                  <SidebarProvider>
+                    <AdminSidebar />
+                    <div className="lg:ps-64 flex flex-col min-h-screen">
+                      <AdminHeader />
+                      <AdminMainContent>{children}</AdminMainContent>
+                    </div>
+                  </SidebarProvider>
+                </AdminRefreshProvider>
+              </AdminRoleProvider>
             </AdminLangProvider>
           )}
 
