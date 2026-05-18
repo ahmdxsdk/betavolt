@@ -31,7 +31,7 @@ export default function MobileMenuButton({ links, ctaLabel, projectTypes, timeli
   const overlay = (
     <div
       className={[
-        'fixed inset-0 z-[60] bg-white/98 dark:bg-slate-950/98 backdrop-blur-md overflow-y-auto',
+        'fixed inset-0 z-[60] bg-white/60 dark:bg-slate-950/60 backdrop-blur-lg overflow-y-auto',
         'transition-opacity duration-300 ease-in-out',
         isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
       ].join(' ')}
@@ -42,7 +42,7 @@ export default function MobileMenuButton({ links, ctaLabel, projectTypes, timeli
         onClick={() => setIsOpen(false)}
         aria-label="Close menu"
         className={[
-          'absolute top-4 end-4',
+          'absolute top-4 end-4 z-10',
           'w-11 h-11 flex items-center justify-center',
           'rounded-full border border-slate-200 dark:border-slate-700',
           'text-slate-500 dark:text-slate-400',
