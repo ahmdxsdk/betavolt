@@ -31,7 +31,7 @@ export default function MobileMenuButton({ links, ctaLabel, projectTypes, timeli
   const overlay = (
     <div
       className={[
-        'fixed inset-0 z-[60] bg-white/60 dark:bg-slate-950/60 backdrop-blur-lg overflow-y-auto',
+        'fixed inset-0 z-[60] bg-white dark:bg-slate-950 overflow-y-auto',
         'transition-opacity duration-300 ease-in-out',
         isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
       ].join(' ')}
