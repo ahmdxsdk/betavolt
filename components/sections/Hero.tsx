@@ -1,5 +1,8 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import { Link } from '@/navigation';
+import { getContent } from '@/lib/content-store';
+import HeroMediaDisplay from './HeroMediaDisplay';
+import type { HeroMedia } from '@/app/api/admin/content/home/media/route';
 
 /* ── SVG icons ── */
 function BoltIcon()   { return <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L4.5 13.5H11L10 22L20.5 10H14L13 2Z"/></svg>; }
@@ -22,6 +25,8 @@ export default async function Hero() {
   const t      = await getTranslations();
   const locale = await getLocale();
   const isAr   = locale === 'ar';
+
+  const heroMedia = (await getContent('hero-media')) as HeroMedia | null;
 
   return (
     <section
@@ -255,7 +260,7 @@ export default async function Hero() {
 
           </div>
 
-          {/* ── Video column (logical end) ── */}
+          {/* ── Media column (logical end) ── */}
           <div className="animate-fade-up [animation-delay:200ms]">
             <div
               className="
@@ -269,20 +274,7 @@ export default async function Hero() {
                 transition-all duration-300
               "
             >
-              <div className="aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] xl:aspect-[16/10] w-full bg-slate-900 dark:bg-slate-950">
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  poster="/img/video-placeholder.jpg"
-                  aria-hidden="true"
-                  className="w-full h-full object-cover"
-                >
-                  <source src="/img/betavolt.webm" type="video/webm" />
-                  <source src="/img/betavolt.mp4"  type="video/mp4"  />
-                </video>
-              </div>
+              <HeroMediaDisplay media={heroMedia} />
 
               {/* Subtle inner top gloss */}
               <div

@@ -1,14 +1,65 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import Image from 'next/image';
+import { ChevronDown, Upload, Trash2, Film, ImageIcon, AlertCircle, ArrowUp, ArrowDown, Plus } from 'lucide-react';
 import { useAdminLang } from '@/components/admin/AdminLangProvider';
+import type { HeroMedia } from '@/app/api/admin/content/home/media/route';
+import ConfirmModal from '@/components/admin/ConfirmModal';
 
 /* ─── Style tokens ───────────────────────────────────── */
 const LABEL    = 'block text-[11px] font-bold tracking-[0.12em] uppercase text-slate-500 dark:text-slate-400 mb-1.5';
 const SUB      = 'text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-1 block';
 const INPUT    = 'w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-500 transition-colors';
 const TEXTAREA = INPUT + ' resize-none leading-relaxed';
+
+/* ─── Media section labels ───────────────────────────── */
+const ML = {
+  en: {
+    sectionD:        'Hero Media',
+    mediaDesc:       "Control the visual displayed in the hero's right column. Upload a single video or one/multiple images shown as a slideshow.",
+    currentMedia:    'Current Media',
+    noMedia:         'No media configured — the default site video is shown.',
+    addVideo:        'Upload Video',
+    addImage:        'Add Image',
+    addVideoHint:    'MP4 or WebM · max 50 MB',
+    addImageHint:    'JPG, PNG or WebP · max 50 MB',
+    videoAlone:      'A video must be alone. Remove all images first.',
+    imageAlone:      'Images cannot be added while a video exists. Remove the video first.',
+    deleting:        'Deleting…',
+    uploading:       'Uploading…',
+    deleteConfirm:   'Remove this item?',
+    moveUp:          'Move up',
+    moveDown:        'Move down',
+    videoLabel:      'Video',
+    imagesLabel:     'Slideshow',
+    itemCount:       (n: number) => `${n} image${n !== 1 ? 's' : ''}`,
+    errUpload:       'Upload failed. Try again.',
+    errDelete:       'Delete failed. Try again.',
+  },
+  ar: {
+    sectionD:        'وسائط الهيرو',
+    mediaDesc:       'تحكم في المحتوى المرئي الذي يظهر في العمود الأيمن من قسم الهيرو. ارفع فيديو واحد أو صورة أو أكثر تُعرض كعرض شرائح.',
+    currentMedia:    'الوسائط الحالية',
+    noMedia:         'لم يتم تعيين وسائط — يُعرض الفيديو الافتراضي للموقع.',
+    addVideo:        'رفع فيديو',
+    addImage:        'إضافة صورة',
+    addVideoHint:    'MP4 أو WebM · الحد الأقصى 50 ميجابايت',
+    addImageHint:    'JPG أو PNG أو WebP · الحد الأقصى 50 ميجابايت',
+    videoAlone:      'يجب أن يكون الفيديو وحده. احذف جميع الصور أولاً.',
+    imageAlone:      'لا يمكن إضافة صور بينما يوجد فيديو. احذف الفيديو أولاً.',
+    deleting:        'جارٍ الحذف…',
+    uploading:       'جارٍ الرفع…',
+    deleteConfirm:   'حذف هذا العنصر؟',
+    moveUp:          'تحريك للأعلى',
+    moveDown:        'تحريك للأسفل',
+    videoLabel:      'فيديو',
+    imagesLabel:     'عرض شرائح',
+    itemCount:       (n: number) => `${n} ${n === 1 ? 'صورة' : 'صور'}`,
+    errUpload:       'فشل الرفع. حاول مجدداً.',
+    errDelete:       'فشل الحذف. حاول مجدداً.',
+  },
+};
 
 /* ─── Bilingual UI labels ────────────────────────────── */
 const L = {
@@ -36,6 +87,7 @@ const L = {
     sectionHeading:   'Section Heading',
     introParagraph:   'Intro Paragraph',
     ctaButton:        'CTA Button',
+    sectionD:         'Hero Media',
     savesTo:          'Saves to',
     savesAnd:         'and',
     savesLive:        '— live immediately.',
@@ -67,6 +119,7 @@ const L = {
     sectionHeading:   'عنوان القسم',
     introParagraph:   'الفقرة التمهيدية',
     ctaButton:        'نص زر الدعوة للإجراء',
+    sectionD:         'وسائط الهيرو',
     savesTo:          'يحفظ في',
     savesAnd:         'و',
     savesLive:        '— فوري بعد الحفظ.',
@@ -213,6 +266,307 @@ function StatRow({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ─── MediaSection ───────────────────────────────────── */
+function MediaSection({ lang }: { lang: 'en' | 'ar' }) {
+  const m = ML[lang];
+  const [media,        setMedia]        = useState<HeroMedia>({ type: 'images', items: [] });
+  const [loadingMedia, setLoadingMedia] = useState(true);
+  const [uploading,    setUploading]    = useState(false);
+  const [deletingUrl,  setDeletingUrl]  = useState<string | null>(null);
+  const [error,        setError]        = useState<string | null>(null);
+  const [confirmUrl,   setConfirmUrl]   = useState<string | null>(null);
+  const videoRef = useRef<HTMLInputElement>(null);
+  const imageRef = useRef<HTMLInputElement>(null);
+
+  /* Load current config */
+  useEffect(() => {
+    fetch('/api/admin/content/home/media')
+      .then(r => r.json())
+      .then((d: HeroMedia) => setMedia(d))
+      .finally(() => setLoadingMedia(false));
+  }, []);
+
+  const hasVideo  = media.type === 'video'  && media.items.length > 0;
+  const hasImages = media.type === 'images' && media.items.length > 0;
+  const isEmpty   = media.items.length === 0;
+
+  const canAddVideo  = isEmpty;
+  const canAddImages = isEmpty || media.type === 'images';
+
+  /* Upload handler */
+  async function handleUpload(files: FileList | null, mediaType: 'video' | 'images') {
+    if (!files || files.length === 0) return;
+    setError(null);
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('mediaType', mediaType);
+        const res = await fetch('/api/admin/content/home/media', { method: 'POST', body: fd });
+        const json = await res.json() as { ok?: boolean; config?: HeroMedia; error?: string };
+        if (!res.ok) { setError(json.error ?? m.errUpload); return; }
+        if (json.config) setMedia(json.config);
+      }
+    } catch {
+      setError(m.errUpload);
+    } finally {
+      setUploading(false);
+      if (videoRef.current) videoRef.current.value = '';
+      if (imageRef.current) imageRef.current.value = '';
+    }
+  }
+
+  /* Delete handler — opens modal first */
+  function handleDelete(url: string) {
+    setConfirmUrl(url);
+  }
+
+  async function executeDelete(url: string) {
+    setConfirmUrl(null);
+    setError(null);
+    setDeletingUrl(url);
+    try {
+      const res  = await fetch('/api/admin/content/home/media', {
+        method:  'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ url }),
+      });
+      const json = await res.json() as { ok?: boolean; config?: HeroMedia; error?: string };
+      if (!res.ok) { setError(json.error ?? m.errDelete); return; }
+      if (json.config) setMedia(json.config);
+    } catch {
+      setError(m.errDelete);
+    } finally {
+      setDeletingUrl(null);
+    }
+  }
+
+  const isVideo = (url: string) => /\.(mp4|webm|ogg)(\?|$)/i.test(url);
+
+  /* Reorder handler */
+  async function moveItem(idx: number, dir: -1 | 1) {
+    const newItems = [...media.items];
+    const swapIdx  = idx + dir;
+    if (swapIdx < 0 || swapIdx >= newItems.length) return;
+    [newItems[idx], newItems[swapIdx]] = [newItems[swapIdx], newItems[idx]];
+    const optimistic = { ...media, items: newItems };
+    setMedia(optimistic);
+    await fetch('/api/admin/content/home/media', {
+      method:  'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ items: newItems }),
+    });
+  }
+
+
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-xs text-slate-500 dark:text-slate-400 -mt-1">{m.mediaDesc}</p>
+
+      {/* Error banner */}
+      {error && (
+        <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 text-xs font-semibold">
+          <AlertCircle size={13} className="shrink-0" />
+          <span className="flex-1">{error}</span>
+          <button type="button" onClick={() => setError(null)} className="text-red-400 hover:text-red-600 font-bold text-sm leading-none">✕</button>
+        </div>
+      )}
+
+      {/* Current media grid */}
+      <div>
+        <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-slate-400 dark:text-slate-500 mb-2">{m.currentMedia}</p>
+
+        {loadingMedia ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {[1,2].map(i => (
+              <div key={i} className="aspect-video rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+            ))}
+          </div>
+        ) : isEmpty ? (
+          <div className="flex items-center gap-2.5 px-4 py-5 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 text-xs">
+            <ImageIcon size={16} className="shrink-0" />
+            <span>{m.noMedia}</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {media.items.map((url, idx) => (
+              <div key={url} className="relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-900 aspect-video shadow-sm">
+                {isVideo(url) ? (
+                  <video
+                    src={url}
+                    muted
+                    loop
+                    autoPlay
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Image
+                    src={url}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="(max-width:640px) 50vw, 33vw"
+                    unoptimized
+                  />
+                )}
+
+                {/* Type badge */}
+                <span className="absolute top-1.5 start-1.5 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/60 text-white text-[10px] font-bold">
+                  {isVideo(url) ? <Film size={9} /> : <ImageIcon size={9} />}
+                  {isVideo(url) ? m.videoLabel : `${idx + 1}`}
+                </span>
+
+                {/* Controls overlay */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-200 flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100">
+                  {/* Reorder arrows (images only) */}
+                  {!isVideo(url) && media.items.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => moveItem(idx, -1)}
+                        disabled={idx === 0}
+                        title={m.moveUp}
+                        className="w-7 h-7 rounded-lg bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-white flex items-center justify-center hover:bg-white disabled:opacity-30 transition-colors"
+                      >
+                        <ArrowUp size={12} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveItem(idx, 1)}
+                        disabled={idx === media.items.length - 1}
+                        title={m.moveDown}
+                        className="w-7 h-7 rounded-lg bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-white flex items-center justify-center hover:bg-white disabled:opacity-30 transition-colors"
+                      >
+                        <ArrowDown size={12} />
+                      </button>
+                    </>
+                  )}
+                  {/* Delete */}
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(url)}
+                    disabled={deletingUrl === url}
+                    title={deletingUrl === url ? m.deleting : 'Delete'}
+                    className="w-7 h-7 rounded-lg bg-red-500 text-white flex items-center justify-center hover:bg-red-600 disabled:opacity-50 transition-colors"
+                  >
+                    {deletingUrl === url
+                      ? <span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                      : <Trash2 size={12} />}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Type label */}
+      {!isEmpty && (
+        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+          {hasVideo
+            ? <><Film size={13} className="text-blue-500" /> {m.videoLabel}</>
+            : <><ImageIcon size={13} className="text-blue-500" /> {m.imagesLabel} · {m.itemCount(media.items.length)}</>}
+        </div>
+      )}
+
+      {/* Action buttons */}
+      <div className="flex flex-wrap gap-3">
+
+        {/* Upload Video */}
+        <div>
+          <input
+            ref={videoRef}
+            type="file"
+            accept="video/mp4,video/webm"
+            className="sr-only"
+            id="hero-video-input"
+            disabled={uploading || !canAddVideo}
+            onChange={e => handleUpload(e.target.files, 'video')}
+          />
+          <label
+            htmlFor="hero-video-input"
+            title={!canAddVideo ? m.videoAlone : undefined}
+            className={[
+              'inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all duration-150 select-none',
+              canAddVideo && !uploading
+                ? 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer'
+                : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-300 dark:text-slate-600 cursor-not-allowed',
+            ].join(' ')}
+          >
+            <Film size={13} />
+            {uploading ? m.uploading : m.addVideo}
+            {!canAddVideo && <AlertCircle size={11} className="text-amber-400" />}
+          </label>
+          {!canAddVideo && (
+            <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-1">{m.videoAlone}</p>
+          )}
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{m.addVideoHint}</p>
+        </div>
+
+        {/* Upload Image(s) */}
+        <div>
+          <input
+            ref={imageRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            className="sr-only"
+            id="hero-image-input"
+            disabled={uploading || !canAddImages}
+            onChange={e => handleUpload(e.target.files, 'images')}
+          />
+          <label
+            htmlFor="hero-image-input"
+            title={!canAddImages ? m.imageAlone : undefined}
+            className={[
+              'inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all duration-150 select-none',
+              canAddImages && !uploading
+                ? 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+                : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-300 dark:text-slate-600 cursor-not-allowed',
+            ].join(' ')}
+          >
+            <Plus size={13} />
+            {uploading ? m.uploading : m.addImage}
+            {!canAddImages && <AlertCircle size={11} className="text-amber-400" />}
+          </label>
+          {!canAddImages && (
+            <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-1">{m.imageAlone}</p>
+          )}
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{m.addImageHint}</p>
+        </div>
+
+      </div>
+
+      {/* Upload progress bar */}
+      {uploading && (
+        <div className="h-1 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+          <div className="h-full bg-blue-500 rounded-full animate-pulse w-2/3" />
+        </div>
+      )}
+
+      {/* Confirm delete modal */}
+      <ConfirmModal
+        open={confirmUrl !== null}
+        title={lang === 'ar' ? 'حذف العنصر' : 'Delete Item'}
+        description={
+          confirmUrl
+            ? lang === 'ar'
+              ? `هل أنت متأكد من حذف هذا ${isVideo(confirmUrl) ? 'الفيديو' : 'الصورة'}؟ لا يمكن التراجع عن هذا الإجراء.`
+              : `Are you sure you want to delete this ${isVideo(confirmUrl) ? 'video' : 'image'}? This action cannot be undone.`
+            : ''
+        }
+        confirmLabel={lang === 'ar' ? 'نعم، احذف' : 'Yes, Delete'}
+        cancelLabel={lang === 'ar' ? 'إلغاء' : 'Cancel'}
+        danger
+        onConfirm={() => confirmUrl && executeDelete(confirmUrl)}
+        onCancel={() => setConfirmUrl(null)}
+      />
     </div>
   );
 }
@@ -401,6 +755,11 @@ export default function HomeContentPage() {
           placeholderAr="عرض جميع الخدمات"
         />
 
+      </SectionCard>
+
+      {/* ── D — Hero Media ────────────────────────────────── */}
+      <SectionCard title={t.sectionD} badge="D" defaultOpen>
+        <MediaSection lang={lang} />
       </SectionCard>
 
       {/* ── Floating Save Bar ─────────────────────────────── */}
