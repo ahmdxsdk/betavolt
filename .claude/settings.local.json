@@ -33,7 +33,8 @@
       "Bash(curl -sL \"http://localhost:3000/admin\" -w \"\\\\nHTTP_STATUS: %{http_code}\")",
       "Bash(node -e \"const en=require\\('./messages/en.json'\\); const keys=Object.keys\\(en.contact_page||{}\\).filter\\(k=>k.includes\\('service'\\)\\); keys.forEach\\(k=>console.log\\(k,'=',en.contact_page[k]\\)\\)\")",
       "Bash(node -e \"const ar=require\\('./messages/ar.json'\\); const keys=Object.keys\\(ar.contact_page||{}\\).filter\\(k=>k.includes\\('service'\\)\\); keys.forEach\\(k=>console.log\\(k,'=',ar.contact_page[k]\\)\\)\")",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git remote *)"
     ]
   }
 }
