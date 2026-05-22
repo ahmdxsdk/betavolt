@@ -4,6 +4,8 @@
 
 ### Smart Infrastructure & Energy Solutions Platform
 
+![BetaVolt Preview](https://res.cloudinary.com/dt0un0ouu/image/upload/v1779474579/betavoltt-com_1_syay4t.png)
+
 ![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
