@@ -6,6 +6,12 @@ import type { Role } from './lib/admin-roles';
 
 const handleI18n = createIntlMiddleware(routing);
 
+/* ─── Domain guard ───────────────────────────────────────────
+   Visitors landing on the wrong (typo-squatted) domains get
+   redirected to the official site before anything renders.    */
+const WRONG_DOMAINS = new Set(['betavoltt.com', 'wwbetavoltt.com']);
+const OFFICIAL_DOMAIN = 'https://www.betavolt.com.sa';
+
 /* ─── Route permission rules ───────────────────────────────
    Prefixes use the /admin/... form.
    API routes strip the leading /api before matching.
@@ -34,6 +40,11 @@ function isAllowed(pathname: string, role: Role): boolean {
 /* ─── Middleware ─────────────────────────────────────────── */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  /* ══ 0. Domain guard — runs before everything else ═════════ */
+  if (WRONG_DOMAINS.has(request.nextUrl.hostname.toLowerCase())) {
+    return NextResponse.redirect(OFFICIAL_DOMAIN, 308);
+  }
 
   /* ══ 1. Admin API routes — /api/admin/* ════════════════════
      These are completely separate from the page routes.
