@@ -9,7 +9,7 @@ const handleI18n = createIntlMiddleware(routing);
 /* ─── Domain guard ───────────────────────────────────────────
    Visitors landing on the wrong (typo-squatted) domains get
    redirected to the official site before anything renders.    */
-const WRONG_DOMAINS = new Set(['betavoltt.com', 'wwbetavoltt.com']);
+const WRONG_DOMAINS = new Set(['betavoltt.com', 'www.betavoltt.com', 'wwbetavoltt.com']);
 const OFFICIAL_DOMAIN = 'https://www.betavolt.com.sa';
 
 /* ─── Route permission rules ───────────────────────────────
