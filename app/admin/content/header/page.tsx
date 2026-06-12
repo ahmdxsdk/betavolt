@@ -1,14 +1,29 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { ChevronDown, Save, RefreshCw } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import Image from 'next/image';
+import { ChevronDown, Save, RefreshCw, Upload, Trash2, ImageIcon } from 'lucide-react';
 import { useAdminLang } from '@/components/admin/AdminLangProvider';
 
 /* ─── Bilingual labels ───────────────────────────────── */
 const L = {
   en: {
-    pageTitle:  'Navbar Content',
-    pageDesc:   'Edit the navigation link labels and the CTA button text.',
+    pageTitle:   'Navbar Content',
+    pageDesc:    'Edit the navigation link labels, logo, and CTA button text.',
+    sectionLogo: 'Logo',
+    logoDesc:    'Upload separate logos for dark and light mode. Replaces the default BETAVOLT text mark.',
+    logoDark:    'Dark Mode Logo',
+    logoLight:   'Light Mode Logo',
+    logoDarkHint: 'Shown when the site is in dark mode',
+    logoLightHint:'Shown when the site is in light mode',
+    noLogo:      'None — default mark used',
+    uploadLogo:  'Upload',
+    uploadHint:  'PNG, SVG or WebP · max 2 MB · recommended height 32 px',
+    removeLogo:  'Remove',
+    uploading:   'Uploading…',
+    deleting:    'Removing…',
+    errUpload:   'Upload failed. Try again.',
+    errDelete:   'Remove failed. Try again.',
     sectionA:   'A — Navigation Links',
     sectionB:   'B — CTA Button',
     services:   'Services',
@@ -25,7 +40,21 @@ const L = {
   },
   ar: {
     pageTitle:  'محتوى شريط التنقل',
-    pageDesc:   'تعديل تسميات روابط التنقل ونص زر الدعوة للعمل.',
+    pageDesc:   'تعديل تسميات روابط التنقل واللوجو ونص زر الدعوة للعمل.',
+    sectionLogo:  'اللوجو',
+    logoDesc:     'ارفع لوجو منفصل للوضع الليلي وآخر للوضع الفاتح. يحل محل النص الافتراضي BETAVOLT.',
+    logoDark:     'لوجو الوضع الليلي',
+    logoLight:    'لوجو الوضع الفاتح',
+    logoDarkHint: 'يظهر عند تفعيل الوضع الليلي',
+    logoLightHint:'يظهر عند تفعيل الوضع الفاتح',
+    noLogo:       'لا يوجد — يُستخدم الافتراضي',
+    uploadLogo:   'رفع',
+    uploadHint:   'PNG أو SVG أو WebP · الحد الأقصى 2 ميجابايت · الارتفاع الموصى به 32 بكسل',
+    removeLogo:   'إزالة',
+    uploading:    'جارٍ الرفع…',
+    deleting:     'جارٍ الإزالة…',
+    errUpload:    'فشل الرفع. حاول مجدداً.',
+    errDelete:    'فشل الإزالة. حاول مجدداً.',
     sectionA:   'أ — روابط التنقل',
     sectionB:   'ب — زر الدعوة للعمل (CTA)',
     services:   'الخدمات',
@@ -47,6 +76,165 @@ type T = typeof L['en'];
 /* ─── Style tokens ───────────────────────────────────── */
 const LABEL = 'block text-[11px] font-bold tracking-[0.12em] uppercase text-slate-500 dark:text-slate-400 mb-1.5';
 const INPUT  = 'w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-500 transition-colors';
+
+/* ─── LogoSlot — single upload/preview for one mode ─────── */
+function LogoSlot({ mode, label, hint, url, onUploaded, onRemoved, t }: {
+  mode:       'dark' | 'light';
+  label:      string;
+  hint:       string;
+  url:        string | null;
+  onUploaded: (url: string) => void;
+  onRemoved:  () => void;
+  t:          T;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [deleting,  setDeleting]  = useState(false);
+  const [error,     setError]     = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const bg = mode === 'dark'
+    ? 'bg-slate-800 border-slate-700'
+    : 'bg-slate-100 border-slate-200';
+
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { setError(t.errUpload); return; }
+    setUploading(true); setError(null);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      form.append('mode', mode);
+      const res = await fetch('/api/admin/content/logo', { method: 'POST', body: form });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      onUploaded(data.url);
+    } catch { setError(t.errUpload); }
+    finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+
+  async function handleDelete() {
+    setDeleting(true); setError(null);
+    try {
+      const res = await fetch('/api/admin/content/logo', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      });
+      if (!res.ok) throw new Error();
+      onRemoved();
+    } catch { setError(t.errDelete); }
+    finally { setDeleting(false); }
+  }
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      <div>
+        <p className={LABEL}>{label}</p>
+        <p className="text-[11px] text-slate-400 dark:text-slate-500 -mt-1 mb-2">{hint}</p>
+      </div>
+
+      {/* Preview area */}
+      <div className={`flex items-center gap-3 p-4 rounded-xl border ${bg} min-h-[64px]`}>
+        {url ? (
+          <>
+            <div className="relative h-8 flex-1 min-w-0">
+              <Image src={url} alt={label} fill className="object-contain object-left" unoptimized />
+            </div>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 transition-colors disabled:opacity-50"
+            >
+              {deleting ? <RefreshCw size={11} className="animate-spin" /> : <Trash2 size={11} strokeWidth={2.5} />}
+              {deleting ? t.deleting : t.removeLogo}
+            </button>
+          </>
+        ) : (
+          <div className="flex items-center gap-2 w-full">
+            <ImageIcon size={16} className="text-slate-400 shrink-0" />
+            <p className="text-xs text-slate-400 dark:text-slate-500">{t.noLogo}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Upload button */}
+      <div>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/png,image/svg+xml,image/webp,image/jpeg"
+          className="hidden"
+          onChange={handleUpload}
+        />
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors disabled:opacity-50 shadow-sm"
+        >
+          {uploading ? <RefreshCw size={12} className="animate-spin" /> : <Upload size={12} strokeWidth={2.5} />}
+          {uploading ? t.uploading : t.uploadLogo}
+        </button>
+        {error && <p className="mt-1 text-xs text-red-500 font-medium">{error}</p>}
+      </div>
+    </div>
+  );
+}
+
+/* ─── LogoSection ────────────────────────────────────── */
+function LogoSection({ t }: { t: T }) {
+  const [darkUrl,  setDarkUrl]  = useState<string | null>(null);
+  const [lightUrl, setLightUrl] = useState<string | null>(null);
+  const [loading,  setLoading]  = useState(true);
+
+  useEffect(() => {
+    fetch('/api/admin/content/logo')
+      .then(r => r.json())
+      .then(d => { setDarkUrl(d.dark ?? null); setLightUrl(d.light ?? null); })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="h-16 flex items-center">
+        <RefreshCw size={16} className="text-blue-600 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-xs text-slate-500 dark:text-slate-400 -mt-1">{t.logoDesc}</p>
+      <p className="text-[11px] text-slate-400 dark:text-slate-500">{t.uploadHint}</p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <LogoSlot
+          mode="dark"
+          label={t.logoDark}
+          hint={t.logoDarkHint}
+          url={darkUrl}
+          onUploaded={url => setDarkUrl(url)}
+          onRemoved={() => setDarkUrl(null)}
+          t={t}
+        />
+        <LogoSlot
+          mode="light"
+          label={t.logoLight}
+          hint={t.logoLightHint}
+          url={lightUrl}
+          onUploaded={url => setLightUrl(url)}
+          onRemoved={() => setLightUrl(null)}
+          t={t}
+        />
+      </div>
+    </div>
+  );
+}
 
 /* ─── BiField ────────────────────────────────────────── */
 function BiField({ label, valueEn, valueAr, onEn, onAr, placeholderEn = '', placeholderAr = '', t }: {
@@ -188,6 +376,11 @@ export default function HeaderContentPage() {
       </div>
 
       <NavPreview links={navLinks} t={t} />
+
+      {/* Logo */}
+      <SectionCard title={t.sectionLogo} badge="⚡" defaultOpen>
+        <LogoSection t={t} />
+      </SectionCard>
 
       {/* A — Navigation Links */}
       <SectionCard title={t.sectionA} badge="A" defaultOpen>
