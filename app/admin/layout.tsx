@@ -11,12 +11,19 @@ import AdminHeader from '@/components/admin/AdminHeader';
 import { AdminRoleProvider } from '@/components/admin/AdminRoleProvider';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import type { Role } from '@/lib/admin-roles';
+import { getContent } from '@/lib/content-store';
 import '@/app/globals.css';
 
-export const metadata: Metadata = {
-  title: 'Admin – BetaVolt',
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const faviconUrl = await getContent('favicon') as string | null;
+  return {
+    title: 'Admin – BetaVolt',
+    robots: { index: false, follow: false },
+    ...(faviconUrl && {
+      icons: { icon: faviconUrl, shortcut: faviconUrl, apple: faviconUrl },
+    }),
+  };
+}
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
