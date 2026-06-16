@@ -8,8 +8,15 @@ import { useAdminLang } from '@/components/admin/AdminLangProvider';
 /* ─── Bilingual labels ───────────────────────────────── */
 const L = {
   en: {
-    pageTitle:    'Navbar Content',
-    pageDesc:     'Edit the navigation link labels, logo, and CTA button text.',
+    pageTitle:      'Navbar Content',
+    pageDesc:       'Edit the navigation link labels, logo, favicon, and CTA button text.',
+    sectionFavicon: 'Favicon',
+    faviconDesc:    'The small icon shown in browser tabs, bookmarks, and mobile home screens.',
+    faviconHint:    'PNG or ICO · max 1 MB · recommended 32×32 or 64×64 px',
+    currentFavicon: 'Current Favicon',
+    noFavicon:      'None — browser default used',
+    uploadFavicon:  'Upload Favicon',
+    removeFavicon:  'Remove',
     sectionLogo:  'Logo',
     logoDesc:     'Upload separate logos for dark and light mode. Replaces the default BETAVOLT text mark.',
     logoDark:     'Dark Mode Logo',
@@ -39,8 +46,15 @@ const L = {
     saveHint:     'Saves nav labels to EN/AR message files — live on next page load.',
   },
   ar: {
-    pageTitle:    'محتوى شريط التنقل',
-    pageDesc:     'تعديل تسميات روابط التنقل واللوجو ونص زر الدعوة للعمل.',
+    pageTitle:      'محتوى شريط التنقل',
+    pageDesc:       'تعديل تسميات روابط التنقل واللوجو والفافيكون ونص زر الدعوة للعمل.',
+    sectionFavicon: 'الفافيكون',
+    faviconDesc:    'الأيقونة الصغيرة التي تظهر في تبويبات المتصفح والإشارات المرجعية وشاشة الجوال.',
+    faviconHint:    'PNG أو ICO · الحد الأقصى 1 ميجابايت · الحجم الموصى به 32×32 أو 64×64 بكسل',
+    currentFavicon: 'الفافيكون الحالي',
+    noFavicon:      'لا يوجد — يُستخدم الافتراضي',
+    uploadFavicon:  'رفع فافيكون',
+    removeFavicon:  'إزالة',
     sectionLogo:  'اللوجو',
     logoDesc:     'ارفع لوجو منفصل للوضع الليلي وآخر للوضع الفاتح. يحل محل النص الافتراضي BETAVOLT.',
     logoDark:     'لوجو الوضع الليلي',
@@ -235,6 +249,117 @@ function LogoSection({ t }: { t: T }) {
   );
 }
 
+/* ─── FaviconSection ─────────────────────────────────── */
+function FaviconSection({ t }: { t: T }) {
+  const [url,       setUrl]       = useState<string | null>(null);
+  const [loading,   setLoading]   = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [deleting,  setDeleting]  = useState(false);
+  const [error,     setError]     = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetch('/api/admin/content/favicon')
+      .then(r => r.json())
+      .then(d => setUrl(d.url ?? null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true); setError(null);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch('/api/admin/content/favicon', { method: 'POST', body: form });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error ?? 'failed');
+      }
+      const data = await res.json();
+      setUrl(data.url);
+    } catch (err) {
+      setError(err instanceof Error && err.message !== 'failed' ? err.message : t.errUpload);
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+
+  async function handleDelete() {
+    setDeleting(true); setError(null);
+    try {
+      const res = await fetch('/api/admin/content/favicon', { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      setUrl(null);
+    } catch { setError(t.errDelete); }
+    finally { setDeleting(false); }
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-xs text-slate-500 dark:text-slate-400 -mt-1">{t.faviconDesc}</p>
+
+      {/* Preview */}
+      <div>
+        <p className={LABEL}>{t.currentFavicon}</p>
+        {loading ? (
+          <div className="h-14 flex items-center">
+            <RefreshCw size={16} className="text-blue-600 animate-spin" />
+          </div>
+        ) : url ? (
+          <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+            {/* Browser-tab mockup */}
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 shadow-sm text-xs text-slate-600 dark:text-slate-300 font-medium">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt="favicon" className="w-4 h-4 object-contain" />
+              <span>BetaVolt</span>
+              <span className="text-slate-400 dark:text-slate-500">×</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 transition-colors disabled:opacity-50"
+            >
+              {deleting ? <RefreshCw size={11} className="animate-spin" /> : <Trash2 size={11} strokeWidth={2.5} />}
+              {deleting ? t.deleting : t.removeFavicon}
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-dashed border-slate-300 dark:border-slate-600">
+            <ImageIcon size={18} className="text-slate-400 shrink-0" />
+            <p className="text-sm text-slate-400 dark:text-slate-500">{t.noFavicon}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Upload */}
+      <div>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/png,image/x-icon,image/vnd.microsoft.icon,image/webp,image/jpeg"
+          className="hidden"
+          onChange={handleUpload}
+        />
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors disabled:opacity-50 shadow-sm"
+        >
+          {uploading ? <RefreshCw size={14} className="animate-spin" /> : <Upload size={14} strokeWidth={2.5} />}
+          {uploading ? t.uploading : t.uploadFavicon}
+        </button>
+        <p className="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">{t.faviconHint}</p>
+        {error && <p className="mt-1 text-xs text-red-500 font-medium">{error}</p>}
+      </div>
+    </div>
+  );
+}
+
 /* ─── BiField ────────────────────────────────────────── */
 function BiField({ label, valueEn, valueAr, onEn, onAr, placeholderEn = '', placeholderAr = '', t }: {
   label: string; valueEn: string; valueAr: string;
@@ -379,6 +504,11 @@ export default function HeaderContentPage() {
       {/* Logo */}
       <SectionCard title={t.sectionLogo} badge="⚡" defaultOpen>
         <LogoSection t={t} />
+      </SectionCard>
+
+      {/* Favicon */}
+      <SectionCard title={t.sectionFavicon} badge="🔖" defaultOpen>
+        <FaviconSection t={t} />
       </SectionCard>
 
       {/* A — Navigation Links */}

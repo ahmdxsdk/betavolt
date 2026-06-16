@@ -7,13 +7,20 @@ import { cairo, orbitron } from '@/lib/fonts';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/layout/ThemeProvider';
+import { getContent } from '@/lib/content-store';
 import '@/app/globals.css';
 
-export const metadata: Metadata = {
-  title: 'BetaVolt – Engineering & Contracting',
-  description:
-    'BetaVolt specializes in electrical systems, low current, communications, solar energy, and smart infrastructure contracting.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const faviconUrl = await getContent('favicon') as string | null;
+  return {
+    title: 'BetaVolt – Engineering & Contracting',
+    description:
+      'BetaVolt specializes in electrical systems, low current, communications, solar energy, and smart infrastructure contracting.',
+    ...(faviconUrl && {
+      icons: { icon: faviconUrl, shortcut: faviconUrl, apple: faviconUrl },
+    }),
+  };
+}
 
 type Props = {
   children: React.ReactNode;
