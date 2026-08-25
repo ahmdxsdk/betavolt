@@ -4,6 +4,16 @@ import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 import type { Role } from './lib/admin-roles';
 
+/**
+ * ══ Global Maintenance Mode Switch ═════════════════════════
+ * When set to `true`, ALL incoming traffic (public pages,
+ * localized routes, and admin dashboard pages) is intercepted
+ * and served the dedicated 404 / Maintenance page.
+ *
+ * Set to `false` to restore normal production platform operation.
+ */
+export const MAINTENANCE_MODE = true;
+
 const handleI18n = createIntlMiddleware(routing);
 
 /* ─── Domain guard ───────────────────────────────────────────
@@ -44,6 +54,40 @@ export async function middleware(request: NextRequest) {
   /* ══ 0. Domain guard — runs before everything else ═════════ */
   if (WRONG_DOMAINS.has(request.nextUrl.hostname.toLowerCase())) {
     return NextResponse.redirect(OFFICIAL_DOMAIN, 308);
+  }
+
+  /* ══ 0.1 Static assets and internal paths passthrough ══════ */
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/images') ||
+    pathname.startsWith('/img') ||
+    pathname.startsWith('/favicon.ico') ||
+    pathname.includes('.')
+  ) {
+    return NextResponse.next();
+  }
+
+  /* ══ Global Maintenance Mode Interceptor ═══════════════════
+     Overrides ALL routes including admin dashboard & user pages */
+  if (MAINTENANCE_MODE) {
+    if (pathname.startsWith('/api')) {
+      return NextResponse.json(
+        {
+          error: 'Platform Under Maintenance',
+          code: '404_MAINTENANCE',
+          message: 'The BetaVolt platform is currently undergoing scheduled maintenance and system upgrades.',
+        },
+        { status: 404 }
+      );
+    }
+
+    if (pathname === '/maintenance') {
+      return NextResponse.next();
+    }
+
+    const url = request.nextUrl.clone();
+    url.pathname = '/maintenance';
+    return NextResponse.rewrite(url);
   }
 
   /* ══ 1. Admin API routes — /api/admin/* ════════════════════
@@ -146,10 +190,10 @@ function buildClient(request: NextRequest, response: NextResponse) {
 
 /* ─── Matcher ────────────────────────────────────────────────
    Explicitly include /api/admin/* so API routes are guarded.
-   Keep the public-route pattern unchanged.                    */
+   Keep static exclusions intact.                              */
 export const config = {
   matcher: [
     '/api/admin/:path*',
-    "/((?!api|_next|_vercel|.*\\..*).*)",
+    '/((?!_next|_vercel|images|img|favicon\\.ico|.*\\..*).*)',
   ],
 };
