@@ -4,6 +4,8 @@
 
 ### Smart Infrastructure & Energy Solutions Platform
 
+![BetaVolt Preview](https://res.cloudinary.com/dt0un0ouu/image/upload/v1779474579/betavoltt-com_1_syay4t.png)
+
 ![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
@@ -80,7 +82,7 @@ Admins can replace the hero section's visual with a custom video or a multi-imag
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/betavolt.git
+git clone https://github.com/kareemxamged/betavolt.git
 cd betavolt
 
 # 2. Install dependencies
@@ -155,7 +157,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 ---
 
 <div align="center">
-  <sub>Built with ⚡ by the BetaVolt Team</sub>
+  <sub>Built with ⚡ by <a href="https://github.com/kareemxamged">Kareem Amged</a></sub>
 </div>
 
 ---
@@ -245,7 +247,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 ```bash
 # 1. استنساخ المستودع
-git clone https://github.com/your-username/betavolt.git
+git clone https://github.com/kareemxamged/betavolt.git
 cd betavolt
 
 # 2. تثبيت الاعتماديات
@@ -320,7 +322,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 ---
 
 <div align="center">
-  <sub>صُنع بـ ⚡ من فريق بيتا فولت</sub>
+  <sub>صُنع بـ ⚡ بواسطة <a href="https://github.com/kareemxamged">كريم أمجد</a></sub>
 </div>
 
 </div>

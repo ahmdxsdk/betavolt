@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-import { cairo, orbitron } from '@/lib/fonts';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/layout/ThemeProvider';
@@ -38,21 +37,14 @@ export default async function LocaleLayout({ children, params }: Props) {
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
   return (
-    <html
-      lang={locale}
-      dir={dir}
-      className={`${cairo.variable} ${orbitron.variable}`}
-      suppressHydrationWarning
-    >
-      <body className={`${cairo.className} bg-white dark:bg-slate-950 antialiased min-h-screen transition-colors duration-300`}>
-        <ThemeProvider>
-          <NextIntlClientProvider messages={messages}>
-            <Navbar />
-            {children}
-            <Footer />
-          </NextIntlClientProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+    <div lang={locale} dir={dir} className="min-h-screen flex flex-col justify-between">
+      <ThemeProvider>
+        <NextIntlClientProvider messages={messages}>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </NextIntlClientProvider>
+      </ThemeProvider>
+    </div>
   );
 }

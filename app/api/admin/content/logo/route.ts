@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
     const path = `${LOGO_PREFIX}${mode}-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const buf  = Buffer.from(await file.arrayBuffer());
 
+    /* Remove existing logo for this mode from storage */
     const oldUrl = await getContent(key(mode)) as string | null;
     if (oldUrl) await removeFromStorage(sb, oldUrl);
 

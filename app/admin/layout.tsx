@@ -2,7 +2,6 @@ import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { cookies, headers } from 'next/headers';
 import { ThemeProvider } from 'next-themes';
-import { cairo, orbitron } from '@/lib/fonts';
 import { SidebarProvider } from '@/components/admin/SidebarProvider';
 import AdminLangProvider, { type AdminLang } from '@/components/admin/AdminLangProvider';
 import AdminRefreshProvider, { AdminMainContent } from '@/components/admin/AdminRefreshProvider';
@@ -49,30 +48,26 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   }
 
   return (
-    <html lang="en" suppressHydrationWarning className={`${cairo.variable} ${orbitron.variable}`}>
-      <body className="font-sans antialiased bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-
-          {isLoginPage ? (
-            <>{children}</>
-          ) : (
-            <AdminLangProvider initialLang={initialLang}>
-              <AdminRoleProvider role={role}>
-                <AdminRefreshProvider>
-                  <SidebarProvider>
-                    <AdminSidebar />
-                    <div className="lg:ps-64 flex flex-col min-h-screen">
-                      <AdminHeader />
-                      <AdminMainContent>{children}</AdminMainContent>
-                    </div>
-                  </SidebarProvider>
-                </AdminRefreshProvider>
-              </AdminRoleProvider>
-            </AdminLangProvider>
-          )}
-
-        </ThemeProvider>
-      </body>
-    </html>
+    <div className="font-sans antialiased bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen">
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        {isLoginPage ? (
+          <>{children}</>
+        ) : (
+          <AdminLangProvider initialLang={initialLang}>
+            <AdminRoleProvider role={role}>
+              <AdminRefreshProvider>
+                <SidebarProvider>
+                  <AdminSidebar />
+                  <div className="lg:ps-64 flex flex-col min-h-screen">
+                    <AdminHeader />
+                    <AdminMainContent>{children}</AdminMainContent>
+                  </div>
+                </SidebarProvider>
+              </AdminRefreshProvider>
+            </AdminRoleProvider>
+          </AdminLangProvider>
+        )}
+      </ThemeProvider>
+    </div>
   );
 }
