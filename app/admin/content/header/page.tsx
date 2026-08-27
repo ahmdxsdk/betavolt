@@ -134,15 +134,9 @@ function LogoSlot({ mode, label, hint, url, onUploaded, onRemoved, t }: {
     setDeleting(true); setError(null);
     try {
       const res = await fetch('/api/admin/content/logo', {
-<<<<<<< HEAD
         method:  'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ mode }),
-=======
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode }),
->>>>>>> origin/main
       });
       if (!res.ok) throw new Error();
       onRemoved();
@@ -231,10 +225,6 @@ function LogoSection({ t }: { t: T }) {
     <div className="flex flex-col gap-4">
       <p className="text-xs text-slate-500 dark:text-slate-400 -mt-1">{t.logoDesc}</p>
       <p className="text-[11px] text-slate-400 dark:text-slate-500">{t.uploadHint}</p>
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <LogoSlot
           mode="dark"
@@ -516,14 +506,10 @@ export default function HeaderContentPage() {
         <LogoSection t={t} />
       </SectionCard>
 
-<<<<<<< HEAD
       {/* Favicon */}
       <SectionCard title={t.sectionFavicon} badge="🔖" defaultOpen>
         <FaviconSection t={t} />
       </SectionCard>
-
-=======
->>>>>>> origin/main
       {/* A — Navigation Links */}
       <SectionCard title={t.sectionA} badge="A" defaultOpen>
         <BiField t={t} label={t.services}
